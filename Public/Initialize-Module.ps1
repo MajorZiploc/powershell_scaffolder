@@ -57,6 +57,8 @@ function Invoke-Scaffold {
 
       $appConfigEndPath = "appsettings.json"
       $appConfig = "$Path\$ModuleName\$appConfigEndPath"
+      $privateConfigEndPath = "Private\config.json"
+      $privateConfig = "$Path\$ModuleName\$privateConfigEndPath"
       #Create the module and related files
       New-Item "$Path\$ModuleName\$ModuleName.psm1" -ItemType File
       New-Item "$Path\$ModuleName\$ModuleName.Format.ps1xml" -ItemType File
@@ -65,6 +67,7 @@ function Invoke-Scaffold {
       New-Item "$Path\$ModuleName\Public\$ModuleName.ps1" -ItemType File
       New-Item "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1" -ItemType File
       New-Item $appConfig -ItemType File
+      New-Item $privateConfig -ItemType File
       New-Item "$Path\$ModuleName\.gitignore" -ItemType File
       New-ModuleManifest -Path $Path\$ModuleName\$ModuleName.psd1 `
         -RootModule "$ModuleName.psm1" `
@@ -137,6 +140,7 @@ Describe "<name_of_function1> PS$PSVersion Integrations tests" {
 # . `$PSScriptRoot"/<public_file_name>.ps1"
 
 `$appConfig = Get-Content -Path `$PSScriptRoot"\..\$appConfig" -Raw | ConvertFrom-Json
+`$privateConfig = Get-Content -Path `$PSScriptRoot"\..\$privateConfig" -Raw | ConvertFrom-Json
 
 function $ModuleName {
   #[CmdletBinding()]
