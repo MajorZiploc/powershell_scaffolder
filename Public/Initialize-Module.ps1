@@ -166,7 +166,8 @@ $ModuleName
       $runMainFile > "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1"
 
       "{}" > $appConfig
-      "Private\config.json" > "$Path\$ModuleName\.gitignore"
+      "{}" > $privateConfig
+      $privateConfigEndPath > "$Path\$ModuleName\.gitignore"
       # Copy the public/exported functions into the public folder, private functions into private folder
 
     }
