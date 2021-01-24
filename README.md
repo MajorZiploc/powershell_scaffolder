@@ -15,7 +15,7 @@ All powershell scripts and modules should be stored in the script and module pat
 
 ## Scaffolding a project using this module
 Check available modules on your PC to see if this project is in the listing:
-> Get-Module -ListAvailable -Name Scaffolder
+> Get-Module -ListAvailable -Name powershell_scaffolder
 
 Output of this command should be similar to:
 
@@ -24,10 +24,10 @@ Output of this command should be similar to:
 
 ` ModuleType Version    Name                                ExportedCommands `
 
-` Script     1.0        Scaffolder                          Initialize-Module `
+` Script     1.0        powershell_scaffolder                          Initialize-Module `
 
 If you see this output, it means you can import this module into your current powershell session with:
->  Import-Module -Name Scaffolder
+>  Import-Module -Name powershell_scaffolder
 
 Now you can call the exported commands from this module in your powershell terminal:
 > Initialize-Module
