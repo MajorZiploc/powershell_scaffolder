@@ -187,5 +187,3 @@ $ModuleName
 }
 Invoke-Scaffold -ErrorAction Stop
 }
-
-Initialize-Module
