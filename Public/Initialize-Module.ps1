@@ -139,8 +139,8 @@ Describe "<name_of_function1> PS$PSVersion Integrations tests" {
 # . `$PSScriptRoot"/../Private/<private_file_name>.ps1"
 # . `$PSScriptRoot"/<public_file_name>.ps1"
 
-`$appConfig = Get-Content -Path `$PSScriptRoot"\..\$appConfig" -Raw | ConvertFrom-Json
-`$privateConfig = Get-Content -Path `$PSScriptRoot"\..\$privateConfig" -Raw | ConvertFrom-Json
+`$appConfig = Get-Content -Path `$PSScriptRoot"\..\$appConfigEndPath" -Raw | ConvertFrom-Json
+`$privateConfig = Get-Content -Path `$PSScriptRoot"\..\$privateConfigEndPath" -Raw | ConvertFrom-Json
 
 function $ModuleName {
   #[CmdletBinding()]
