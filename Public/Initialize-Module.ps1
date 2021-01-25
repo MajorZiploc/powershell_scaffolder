@@ -170,6 +170,15 @@ $ModuleName
       $privateConfigEndPath > "$Path\$ModuleName\.gitignore"
       # Copy the public/exported functions into the public folder, private functions into private folder
 
+      Set-Location $Path\$ModuleName
+      @('*.ps1', '*.psd1', '*.psm1', '*.json', '*.txt') `
+      | % {
+        Get-ChildItem $_ -Recurse | ForEach-Object {
+          $content = Get-Content -Path $_
+          Set-Content -Path $_.Fullname -Value $content -Encoding UTF8 -PassThru -Force
+        }
+}
+
     }
     catch {
       Write-Error $_
@@ -178,3 +187,5 @@ $ModuleName
 }
 Invoke-Scaffold -ErrorAction Stop
 }
+
+Initialize-Module
