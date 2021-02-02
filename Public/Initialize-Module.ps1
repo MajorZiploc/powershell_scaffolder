@@ -139,9 +139,6 @@ Describe "<name_of_function1> PS$PSVersion Integrations tests" {
 # . `$PSScriptRoot"/../Private/<private_file_name>.ps1"
 # . `$PSScriptRoot"/<public_file_name>.ps1"
 
-`$appConfig = Get-Content -Path `$PSScriptRoot"\..\$appConfigEndPath" -Raw | ConvertFrom-Json
-`$privateConfig = Get-Content -Path `$PSScriptRoot"\..\$privateConfigEndPath" -Raw | ConvertFrom-Json
-
 function $ModuleName {
   #[CmdletBinding()]
   #param (
@@ -159,8 +156,17 @@ function $ModuleName {
       $runMainFile = @"
 . `$PSScriptRoot"/$ModuleName.ps1"
 
-# call $ModuleName
-$ModuleName
+`$appConfig = Get-Content -Path `$PSScriptRoot"\..\$appConfigEndPath" -Raw | ConvertFrom-Json
+`$privateConfig = Get-Content -Path `$PSScriptRoot"\..\$privateConfigEndPath" -Raw | ConvertFrom-Json
+
+function Invoke-$ModuleName {
+  [CmdletBinding()]
+  param ()
+  $ModuleName
+}
+
+Invoke-$ModuleName -ErrorAction Stop
+
 "@
 
       $runMainFile > "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1"
