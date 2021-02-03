@@ -172,6 +172,7 @@ function Invoke-$ModuleName {
 
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
+    throw `$_
   }
 }
 
