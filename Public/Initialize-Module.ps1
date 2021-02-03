@@ -155,6 +155,8 @@ function $ModuleName {
       $mainFile > "$Path\$ModuleName\Public\$ModuleName.ps1"
 
       $runMainFile = @"
+Set-StrictMode -Version 3
+
 . `$PSScriptRoot"/$ModuleName.ps1"
 
 `$appConfig = Get-Content -Path `$PSScriptRoot"\..\$appConfigEndPath" -Raw | ConvertFrom-Json
