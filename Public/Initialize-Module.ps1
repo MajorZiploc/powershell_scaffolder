@@ -1,4 +1,4 @@
-function Initialize-Module {
+﻿function Initialize-Module {
 param (
   [Parameter(Mandatory = $false)]
   [string]
@@ -65,7 +65,7 @@ function Invoke-Scaffold {
       New-Item "$Path\$ModuleName\en-US\about_$ModuleName.help.txt" -ItemType File
       New-Item "$Path\$ModuleName\Tests\$ModuleName.Tests.ps1" -ItemType File
       New-Item "$Path\$ModuleName\Private\ErrorHandler.ps1" -ItemType File
-      New-Item "$Path\$ModuleName\Public\$ModuleName.ps1" -ItemType File
+      New-Item "$Path\$ModuleName\Private\Program.ps1" -ItemType File
       New-Item "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1" -ItemType File
       New-Item $appConfig -ItemType File
       New-Item $privateConfig -ItemType File
@@ -137,10 +137,10 @@ Describe "<name_of_function1> PS$PSVersion Integrations tests" {
       $unitTestString > "$Path\$ModuleName\Tests\$ModuleName.Tests.ps1"
 
       $mainFile = @"
-# . `$PSScriptRoot"/../Private/<private_file_name>.ps1"
-# . `$PSScriptRoot"/<public_file_name>.ps1"
+# . `$PSScriptRoot"/<private_file_name>.ps1"
+# . `$PSScriptRoot"/../Public/<public_file_name>.ps1"
 
-function $ModuleName {
+function Program {
   #[CmdletBinding()]
   #param (
     # [Parameter(Mandatory = `$false)]
@@ -152,12 +152,12 @@ function $ModuleName {
 }
 "@
 
-      $mainFile > "$Path\$ModuleName\Public\$ModuleName.ps1"
+      $mainFile > "$Path\$ModuleName\Private\Program.ps1"
 
       $runMainFile = @"
 Set-StrictMode -Version 3
 
-. `$PSScriptRoot"/$ModuleName.ps1"
+. `$PSScriptRoot"/../Private/Program.ps1"
 
 `$appConfig = Get-Content -Path `$PSScriptRoot"\..\$appConfigEndPath" -Raw | ConvertFrom-Json
 `$privateConfig = Get-Content -Path `$PSScriptRoot"\..\$privateConfigEndPath" -Raw | ConvertFrom-Json
@@ -167,7 +167,7 @@ function Invoke-$ModuleName {
   [CmdletBinding()]
   param ()
   try {
-    $ModuleName -ErrorAction Stop
+    Program -ErrorAction Stop
   }
 
   catch {
