@@ -208,7 +208,8 @@ function Get-ErrorDetails {
 
       "{`"logFile`": `"$($ModuleName)_log.txt`"}" > $appConfig
       "{`"password`": `"not_put_in_git`"}" > $privateConfig
-      $privateConfigEndPath > "$Path\$ModuleName\.gitignore"
+      $privateConfigEndPath -replace "\\", "/" > "$Path\$ModuleName\.gitignore"
+      "$($ModuleName)_log.txt" >> "$Path\$ModuleName\.gitignore"
       # Copy the public/exported functions into the public folder, private functions into private folder
 
       Set-Location $Path\$ModuleName
