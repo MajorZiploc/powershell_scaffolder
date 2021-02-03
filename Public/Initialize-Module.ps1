@@ -64,6 +64,7 @@ function Invoke-Scaffold {
       New-Item "$Path\$ModuleName\$ModuleName.Format.ps1xml" -ItemType File
       New-Item "$Path\$ModuleName\en-US\about_$ModuleName.help.txt" -ItemType File
       New-Item "$Path\$ModuleName\Tests\$ModuleName.Tests.ps1" -ItemType File
+      New-Item "$Path\$ModuleName\Private\ErrorHandler.ps1" -ItemType File
       New-Item "$Path\$ModuleName\Public\$ModuleName.ps1" -ItemType File
       New-Item "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1" -ItemType File
       New-Item $appConfig -ItemType File
@@ -157,11 +158,18 @@ function $ModuleName {
 
 `$appConfig = Get-Content -Path `$PSScriptRoot"\..\$appConfigEndPath" -Raw | ConvertFrom-Json
 `$privateConfig = Get-Content -Path `$PSScriptRoot"\..\$privateConfigEndPath" -Raw | ConvertFrom-Json
+. `$PSScriptRoot"/../Private/ErrorHandler.ps1"
 
 function Invoke-$ModuleName {
   [CmdletBinding()]
   param ()
-  $ModuleName
+  try {
+    $ModuleName -ErrorAction Stop
+  }
+
+  catch {
+    `$errorDetails = Get-ErrorDetails -error `$_
+  }
 }
 
 Invoke-$ModuleName -ErrorAction Stop
@@ -169,6 +177,30 @@ Invoke-$ModuleName -ErrorAction Stop
 "@
 
       $runMainFile > "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1"
+
+      $errorHandler = @"
+
+function Get-ErrorDetails {
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory=`$true)]
+    `$error
+  )
+
+  return @{
+    ScriptStackTrace = $error.ScriptStackTrace
+    StackTrace = $error.Exception.StackTrace
+    Message = $error.Exception.Message
+    FullyQualifiedErrorId = $error.FullyQualifiedErrorId
+    TargetObject = $error.TargetObject
+    ErrorDetails = $error.ErrorDetails
+  }
+}
+
+"@
+
+      $errorHandler > "$Path\$ModuleName\Private\ErrorHandler.ps1"
+
 
       "{}" > $appConfig
       "{}" > $privateConfig
