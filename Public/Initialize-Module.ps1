@@ -69,6 +69,7 @@ function Invoke-Scaffold {
       New-Item "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1" -ItemType File
       New-Item $appConfig -ItemType File
       New-Item $privateConfig -ItemType File
+      New-Item "$Path\$ModuleName\.gitignore" -ItemType File
       New-ModuleManifest -Path $Path\$ModuleName\$ModuleName.psd1 `
         -RootModule "$ModuleName.psm1" `
         -Description $Description `
@@ -204,6 +205,7 @@ function Get-ErrorDetails {
 
       "{}" > $appConfig
       "{}" > $privateConfig
+      $privateConfigEndPath > "$Path\$ModuleName\.gitignore"
       # Copy the public/exported functions into the public folder, private functions into private folder
 
       Set-Location $Path\$ModuleName
