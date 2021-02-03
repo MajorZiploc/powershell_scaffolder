@@ -209,8 +209,8 @@ function Get-ErrorDetails {
       # Copy the public/exported functions into the public folder, private functions into private folder
 
       Set-Location $Path\$ModuleName
-      @('*.ps1', '*.psd1', '*.psm1', '*.json', '*.txt') `
-      | % {
+      @('*.ps1', '*.psd1', '*.psm1', '*.json', '*.txt', '.gitignore') `
+      | ForEach-Object {
         Get-ChildItem $_ -Recurse | ForEach-Object {
           $content = Get-Content -Path $_
           Set-Content -Path $_.Fullname -Value $content -Encoding UTF8 -PassThru -Force
