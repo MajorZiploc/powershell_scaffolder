@@ -21,7 +21,10 @@ param (
   $ModuleVersion = (Read-Host -prompt "Starting version of this project (0.1): "),
   [Parameter(Mandatory = $false)]
   [string]
-  $CompanyName = (Read-Host -prompt "Company name (N/A): ")
+  $CompanyName = (Read-Host -prompt "Company name (N/A): "),
+  [Parameter(Mandatory = $false)]
+  [string]
+  $CopyRight = (Read-Host -prompt "Copy right (N/A): ")
 )
 function Invoke-Scaffold {
   [CmdletBinding()]
@@ -47,6 +50,9 @@ function Invoke-Scaffold {
       }
       if (($null -eq $CompanyName) -or '' -eq $CompanyName) {
         $CompanyName = "N/A"
+      }
+      if (($null -eq $CopyRight) -or '' -eq $CopyRight) {
+        $CopyRight = "N/A"
       }
       # Create the module and private function directories
       mkdir $Path\$ModuleName
@@ -78,7 +84,8 @@ function Invoke-Scaffold {
         -CompanyName $CompanyName `
         -ModuleVersion $ModuleVersion `
         -FunctionsToExport "*" `
-        -CmdletsToExport "*"
+        -CmdletsToExport "*" `
+        -Copyright $CopyRight
         # -FormatsToProcess "$ModuleName.Format.ps1xml" `
 
       $moduleString = @'
