@@ -1,4 +1,4 @@
-﻿function Initialize-Module {
+function Initialize-Module {
 param (
   [Parameter(Mandatory = $false)]
   [string]
@@ -206,8 +206,8 @@ function Get-ErrorDetails {
       $errorHandler > "$Path\$ModuleName\Private\ErrorHandler.ps1"
 
 
-      "{}" > $appConfig
-      "{}" > $privateConfig
+      "{`"logFile`": `"$($ModuleName)_log.txt`"}" > $appConfig
+      "{`"password`": `"not_put_in_git`"}" > $privateConfig
       $privateConfigEndPath > "$Path\$ModuleName\.gitignore"
       # Copy the public/exported functions into the public folder, private functions into private folder
 
