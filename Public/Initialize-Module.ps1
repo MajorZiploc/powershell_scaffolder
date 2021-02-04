@@ -71,6 +71,7 @@ function Invoke-Scaffold {
       New-Item "$Path\$ModuleName\en-US\about_$ModuleName.help.txt" -ItemType File
       New-Item "$Path\$ModuleName\Tests\$ModuleName.Tests.ps1" -ItemType File
       New-Item "$Path\$ModuleName\Private\ErrorHandler.ps1" -ItemType File
+      New-Item "$Path\$ModuleName\Private\LogHelper.ps1" -ItemType File
       New-Item "$Path\$ModuleName\Private\Program.ps1" -ItemType File
       New-Item "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1" -ItemType File
       New-Item $appConfig -ItemType File
@@ -165,21 +166,36 @@ function Program {
 Set-StrictMode -Version 3
 
 . `$PSScriptRoot"/../Private/Program.ps1"
+. `$PSScriptRoot"/../Private/ErrorHandler.ps1"
+. `$PSScriptRoot"/../Private/LogHelper.ps1"
 
 `$appConfig = Get-Content -Path `$PSScriptRoot"\..\$appConfigEndPath" -Raw | ConvertFrom-Json
 `$privateConfig = Get-Content -Path `$PSScriptRoot"\..\$privateConfigEndPath" -Raw | ConvertFrom-Json
-. `$PSScriptRoot"/../Private/ErrorHandler.ps1"
+
+# Create log directory if it does not exist, does not destroy the folder if it exists already
+New-Item -ItemType Directory -Force -Path "`$PSScriptRoot/../logs" | Out-Null
 
 function Invoke-$ModuleName {
   [CmdletBinding()]
   param ()
+  `$msg = "Starting process. `$(Get-Date)"
+  `$msg >> `$logFile
   try {
     Program -ErrorAction Stop
   }
 
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
+    `$msg = "Top level issue:`n"
+    `$msg += `$errorDetails | ConvertTo-Json
+    `$msg >> `$logFile
     throw `$_
+  }
+
+  finally {
+    `$msg = "Finished process. `$(Get-Date)`n"
+    `$msg >> `$logFile
+    Clean-Logs -logFileNamePrefix `$appConfig.logFileName -keepLogsForNDays `$appConfig.keepLogsForNDays
   }
 }
 
@@ -188,6 +204,39 @@ Invoke-$ModuleName -ErrorAction Stop
 "@
 
       $runMainFile > "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1"
+
+      $logHelper = @"
+
+function Clean-Logs {
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = `$true)]
+    [string]
+    `$logFileNamePrefix
+    ,
+    [Parameter(Mandatory = `$true)]
+    [ValidateRange(0, [int]::MaxValue)]
+    [int]
+    `$keepLogsForNDays
+  )
+  [array]`$logs = Get-ChildItem -Path "`$PSScriptRoot/../logs" | Where-Object {`$_.Name -imatch "`$(`$logFileNamePrefix)_(\S+)?_log\.txt"}
+  `$logs | ForEach-Object {
+    `$r = (`$_.Name | Select-String -Pattern "`$(`$logFileNamePrefix)_(\S+)?_log\.txt");
+    `$match = `$r.Matches.Groups[1].Value;
+    [datetime]`$logDate = `$match
+    `$now = Get-Date
+    `$timespan = `$now - `$logDate
+    `$daysOld = `$timespan.Days
+    if (`$daysOld -gt `$keepLogsForNDays) {
+      # delete the log file
+      Remove-Item -Path `$_.FullName
+    }
+  }
+}
+"@
+
+      $logHelper > "$Path\$ModuleName\Private\LogHelper.ps1"
+
 
       $errorHandler = @"
 
@@ -213,10 +262,10 @@ function Get-ErrorDetails {
       $errorHandler > "$Path\$ModuleName\Private\ErrorHandler.ps1"
 
 
-      "{`"logFile`": `"$($ModuleName)_log.txt`"}" > $appConfig
+      "{`"logFileName`": `"$($ModuleName)`", `"keepLogsForNDays`": 14}" > $appConfig
       "{`"password`": `"not_put_in_git`"}" > $privateConfig
       $privateConfigEndPath -replace "\\", "/" > "$Path\$ModuleName\.gitignore"
-      "$($ModuleName)_log.txt" >> "$Path\$ModuleName\.gitignore"
+      "$($ModuleName)*_log.txt" >> "$Path\$ModuleName\.gitignore"
       # Copy the public/exported functions into the public folder, private functions into private folder
 
       Set-Location $Path\$ModuleName
