@@ -200,6 +200,7 @@ function Invoke-$ModuleName {
   finally {
     `$msg = "Finished process. `$(Get-Date)`n"
     `$msg >> `$logFile
+    # Clean up old logs
     Clean-Logs -logFileNamePrefix `$appConfig.logFileName -keepLogsForNDays `$appConfig.keepLogsForNDays
   }
 }
