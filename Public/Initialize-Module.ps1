@@ -175,6 +175,11 @@ Set-StrictMode -Version 3
 # Create log directory if it does not exist, does not destroy the folder if it exists already
 New-Item -ItemType Directory -Force -Path "`$PSScriptRoot/../logs" | Out-Null
 
+`$startTime = Get-Date
+`$logDate = `$startTime.ToString("yyyy-MM-dd") 
+`$logFile = "`$PSScriptRoot/../logs/`$(`$appConfig.logFileName)_`$(`$logDate)_log.txt"
+
+
 function Invoke-$ModuleName {
   [CmdletBinding()]
   param ()
