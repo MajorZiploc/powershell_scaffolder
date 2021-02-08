@@ -60,9 +60,16 @@ function Invoke-Scaffold {
       mkdir $Path\$ModuleName\Public
       mkdir $Path\$ModuleName\en-US # For about_Help files
       mkdir $Path\$ModuleName\Tests
+      mkdir $Path\$ModuleName\settings
+      mkdir $Path\$ModuleName\settings\test
+      mkdir $Path\$ModuleName\settings\prod
 
       $appConfigEndPath = "appsettings.json"
-      $appConfig = "$Path\$ModuleName\$appConfigEndPath"
+      $lastStateEndPath = "lastState.json"
+      $appConfig = "$Path\$ModuleName\settings\test\$appConfigEndPath"
+      $lastStateConfig = "$Path\$ModuleName\settings\test\$lastStateEndPath"
+      $appConfigProd = "$Path\$ModuleName\settings\prod\$appConfigEndPath"
+      $lastStateConfigProd = "$Path\$ModuleName\settings\prod\$lastStateEndPath"
       $privateConfigEndPath = "Private\config.json"
       $privateConfig = "$Path\$ModuleName\$privateConfigEndPath"
       #Create the module and related files
@@ -75,6 +82,9 @@ function Invoke-Scaffold {
       New-Item "$Path\$ModuleName\Private\Program.ps1" -ItemType File
       New-Item "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1" -ItemType File
       New-Item $appConfig -ItemType File
+      New-Item $lastStateConfig -ItemType File
+      New-Item $appConfigProd -ItemType File
+      New-Item $lastStateConfigProd -ItemType File
       New-Item $privateConfig -ItemType File
       New-Item "$Path\$ModuleName\.gitignore" -ItemType File
       New-ModuleManifest -Path $Path\$ModuleName\$ModuleName.psd1 `
@@ -169,8 +179,12 @@ Set-StrictMode -Version 3
 . `$PSScriptRoot"/../Private/ErrorHandler.ps1"
 . `$PSScriptRoot"/../Private/LogHelper.ps1"
 
-`$appConfig = Get-Content -Path `$PSScriptRoot"\..\$appConfigEndPath" -Raw | ConvertFrom-Json
+`$environ = 'test'
+`$appConfig = Get-Content -Path `$PSScriptRoot"\..\settings\`$environ\$appConfigEndPath" -Raw | ConvertFrom-Json
 `$privateConfig = Get-Content -Path `$PSScriptRoot"\..\$privateConfigEndPath" -Raw | ConvertFrom-Json
+
+`$lastStateFilePath = "`$PSScriptRoot\..\settings\`$environ\$lastStateEndPath"
+`$lastState = Get-Content -Path `$lastStateFilePath -Raw | ConvertFrom-Json
 
 # Create log directory if it does not exist, does not destroy the folder if it exists already
 New-Item -ItemType Directory -Force -Path "`$PSScriptRoot/../logs" | Out-Null
@@ -191,17 +205,19 @@ function Invoke-$ModuleName {
 
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
-    `$msg = "Top level issue:`n"
+    `$msg = "Top level issue:``n"
     `$msg += `$errorDetails | ConvertTo-Json
     `$msg >> `$logFile
     throw `$_
   }
 
   finally {
-    `$msg = "Finished process. `$(Get-Date)`n"
+    `$msg = "Finished process. `$(Get-Date)``n"
     `$msg >> `$logFile
     # Clean up old logs
     Clean-Logs -logFileNamePrefix `$appConfig.logFileName -keepLogsForNDays `$appConfig.keepLogsForNDays
+    # update last state json
+    `$lastState | ConvertTo-Json > `$lastStateFilePath
   }
 }
 
@@ -267,9 +283,18 @@ function Get-ErrorDetails {
 
       $errorHandler > "$Path\$ModuleName\Private\ErrorHandler.ps1"
 
+      $appJson = "{`"logFileName`": `"$($ModuleName)`", `"keepLogsForNDays`": 14}"
+      $lastStateJson = "{`"state`": `"Any state from the last run of this program (or last update of this file) that is required for this run.`"}" 
+      $privateConfigJson = "{`"password`": `"not_put_in_git`"}"
 
-      "{`"logFileName`": `"$($ModuleName)`", `"keepLogsForNDays`": 14}" > $appConfig
-      "{`"password`": `"not_put_in_git`"}" > $privateConfig
+      $appJson > $appConfig
+      $lastStateJson > $lastStateConfig
+      $privateConfigJson > $privateConfig
+
+      $appJson > $appConfigProd
+      $lastStateJson > $lastStateConfigProd
+      $privateConfigJson > $privateConfigProd
+
       $privateConfigEndPath -replace "\\", "/" > "$Path\$ModuleName\.gitignore"
       "$($ModuleName)*_log.txt" >> "$Path\$ModuleName\.gitignore"
       # Copy the public/exported functions into the public folder, private functions into private folder
