@@ -181,7 +181,7 @@ Set-StrictMode -Version 3
 
 `$environ = 'test'
 `$appConfig = Get-Content -Path `$PSScriptRoot"\..\settings\`$environ\$appConfigEndPath" -Raw | ConvertFrom-Json
-`$secrets = Get-Content -Path `$PSScriptRoot"\..\$privateConfigEndPath" -Raw | ConvertFrom-Json
+# `$secrets = Get-Content -Path `$PSScriptRoot"\..\$privateConfigEndPath" -Raw | ConvertFrom-Json
 
 `$lastStateFilePath = "`$PSScriptRoot\..\settings\`$environ\$lastStateEndPath"
 `$lastState = Get-Content -Path `$lastStateFilePath -Raw | ConvertFrom-Json
