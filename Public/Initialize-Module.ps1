@@ -297,7 +297,7 @@ function Get-ErrorDetails {
 
       $privateConfigEndPath -replace "\\", "/" > "$Path\$ModuleName\.gitignore"
       $gitignore_content = "@
-$($ModuleName)*_log.txt`n
+logs/*
 .vscode
 bin/
 obj/
