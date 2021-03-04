@@ -296,7 +296,29 @@ function Get-ErrorDetails {
       $privateConfigJson > $privateConfigProd
 
       $privateConfigEndPath -replace "\\", "/" > "$Path\$ModuleName\.gitignore"
-      "$($ModuleName)*_log.txt" >> "$Path\$ModuleName\.gitignore"
+      $gitignore_content = "@
+$($ModuleName)*_log.txt`n
+.vscode
+bin/
+obj/
+.ionide/
+/debug/
+
+# Visual Studio IDE directory
+.vs/
+
+# Ignore executables
+*.exe
+*.msi
+*.appx
+*.msix
+
+# Ignore binaries and symbols
+*.pdb
+*.dll
+*.wixpdb
+@"
+      $gitignore_content >> "$Path\$ModuleName\.gitignore"
       # Copy the public/exported functions into the public folder, private functions into private folder
 
       Set-Location $Path\$ModuleName
