@@ -70,7 +70,7 @@ function Invoke-Scaffold {
       $lastStateConfig = "$Path\$ModuleName\settings\test\$lastStateEndPath"
       $appConfigProd = "$Path\$ModuleName\settings\prod\$appConfigEndPath"
       $lastStateConfigProd = "$Path\$ModuleName\settings\prod\$lastStateEndPath"
-      $privateConfigEndPath = "Private\config.json"
+      $privateConfigEndPath = "Private\secrets.json"
       $privateConfig = "$Path\$ModuleName\$privateConfigEndPath"
       #Create the module and related files
       New-Item "$Path\$ModuleName\$ModuleName.psm1" -ItemType File
@@ -181,7 +181,7 @@ Set-StrictMode -Version 3
 
 `$environ = 'test'
 `$appConfig = Get-Content -Path `$PSScriptRoot"\..\settings\`$environ\$appConfigEndPath" -Raw | ConvertFrom-Json
-`$privateConfig = Get-Content -Path `$PSScriptRoot"\..\$privateConfigEndPath" -Raw | ConvertFrom-Json
+`$secrets = Get-Content -Path `$PSScriptRoot"\..\$privateConfigEndPath" -Raw | ConvertFrom-Json
 
 `$lastStateFilePath = "`$PSScriptRoot\..\settings\`$environ\$lastStateEndPath"
 `$lastState = Get-Content -Path `$lastStateFilePath -Raw | ConvertFrom-Json
