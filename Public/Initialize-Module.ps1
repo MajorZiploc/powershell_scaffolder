@@ -173,8 +173,8 @@ function Program {
       $mainFile > "$Path\$ModuleName\Private\Program.ps1"
 
       $runMainFile = @"
-# ONLY EDIT THIS FILE IF YOU KNOW WHAT YOU ARE DOING
-# EDIT THE PROGRAM FILE IN THE PRIVATE DIRECTORY
+# Only edit this file if you intend to write a powershell module or need to use secrets
+# If you intend to use this as a powershell project, then edit the program file in the private directory
 # Makes powershell stricter by default to make code safer and more reliable
 Set-StrictMode -Version 3
 
