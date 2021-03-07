@@ -173,14 +173,20 @@ function Program {
       $mainFile > "$Path\$ModuleName\Private\Program.ps1"
 
       $runMainFile = @"
+# ONLY EDIT THIS FILE IF YOU KNOW WHAT YOU ARE DOING
+# EDIT THE PROGRAM FILE IN THE PRIVATE DIRECTORY
+# Makes powershell stricter by default to make code safer and more reliable
 Set-StrictMode -Version 3
 
+# Import statements (follows the bash style dot sourcing notation)
 . `$PSScriptRoot"/../Private/Program.ps1"
 . `$PSScriptRoot"/../Private/ErrorHandler.ps1"
 . `$PSScriptRoot"/../Private/LogHelper.ps1"
 
+# The environment to use. Determines the app config and state objects to use
 `$environ = 'test'
 `$appConfig = Get-Content -Path `$PSScriptRoot"\..\settings\`$environ\$appConfigEndPath" -Raw | ConvertFrom-Json
+# Secrets object. Things that you do not want to put in git go inside this. Add to the secrets json in the private folder
 # `$secrets = Get-Content -Path `$PSScriptRoot"\..\$privateConfigEndPath" -Raw | ConvertFrom-Json
 
 `$lastStateFilePath = "`$PSScriptRoot\..\settings\`$environ\$lastStateEndPath"
@@ -191,6 +197,8 @@ New-Item -ItemType Directory -Force -Path "`$PSScriptRoot/../logs" | Out-Null
 
 `$startTime = Get-Date
 `$logDate = `$startTime.ToString("yyyy-MM-dd") 
+# The log file. Where to perform logging. Write(append) to it like so: `$msg >> `$logFile
+# NOTE: To override the file (deletes the current content): `$msg > `$logFile
 `$logFile = "`$PSScriptRoot/../logs/`$(`$appConfig.logFileName)_`$(`$logDate)_log.txt"
 
 
@@ -200,6 +208,7 @@ function Invoke-$ModuleName {
   `$msg = "Starting process. `$(Get-Date)"
   `$msg >> `$logFile
   try {
+    # Program is where you should write your normal powershell script code
     Program -ErrorAction Stop
   }
 
@@ -221,6 +230,7 @@ function Invoke-$ModuleName {
   }
 }
 
+# Remove the following line if you are trying to write a powershell module that is importable in other powershell projects/modules
 Invoke-$ModuleName -ErrorAction Stop
 
 "@
