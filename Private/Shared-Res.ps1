@@ -19,6 +19,7 @@ function Clean-Logs {
     [string]
     `$logFolder
   )
+
   [array]`$logs = Get-ChildItem -Path "`$logFolder" | Where-Object {`$_.Name -imatch "`$(`$logFileNamePrefix)_(\S+)?_log\.txt"}
   `$logs | ForEach-Object {
     `$r = (`$_.Name | Select-String -Pattern "`$(`$logFileNamePrefix)_(\S+)?_log\.txt");
@@ -33,6 +34,7 @@ function Clean-Logs {
     }
   }
 }
+
 "@
 
   return $logHelper
@@ -63,4 +65,29 @@ function Get-ErrorDetails {
 "@
 
   return $errorHandler
+}
+
+
+function Get-LogWriter {
+  [CmdletBinding()]
+  param ()
+  $logWriter = @"
+
+function Write-Log {
+  [CmdletBinding()]
+  param (
+      [Parameter(Mandatory=`$true)]
+      [string]
+      `$msg
+      ,
+      [Parameter(Mandatory=`$true)]
+      [string]
+      `$logFile
+  )
+
+  `$msg | Out-File -FilePath "`$logFile" -Encoding utf8 -Append
+}
+
+"@
+  return $logWriter
 }
