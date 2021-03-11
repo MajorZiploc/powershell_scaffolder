@@ -211,7 +211,8 @@ function Invoke-$ModuleName {
   [CmdletBinding()]
   param ()
   `$msg = "Starting process. `$(Get-Date)"
-  `$msg >> `$logFile
+  Write-Log -msg `$msg -logFile `$logFile
+
   try {
     # Program is where you should write your normal powershell script code
     Program -ErrorAction Stop
@@ -221,13 +222,13 @@ function Invoke-$ModuleName {
     `$errorDetails = Get-ErrorDetails -error `$_
     `$msg = "Top level issue:``n"
     `$msg += `$errorDetails | ConvertTo-Json
-    `$msg >> `$logFile
+    Write-Log -msg `$msg -logFile `$logFile
     throw `$_
   }
 
   finally {
     `$msg = "Finished process. `$(Get-Date)``n"
-    `$msg >> `$logFile
+    Write-Log -msg `$msg -logFile `$logFile
     # Clean up old logs
     Clean-Logs -logFileNamePrefix `$appConfig.logFileName -keepLogsForNDays `$appConfig.keepLogsForNDays -logFolder "`$logFolder"
     # update last state json
@@ -243,7 +244,9 @@ Invoke-$ModuleName -ErrorAction Stop
       $runMainFile > "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1"
 
       $logHelper = Get-LogHelperContent
+      $logWriter = Get-LogWriter
       $logHelper > "$Path\$ModuleName\Private\LogHelper.ps1"
+      $logWriter >> "$Path\$ModuleName\Private\LogHelper.ps1"
 
       $errorHandler = Get-ErrorHelperContent
       $errorHandler > "$Path\$ModuleName\Private\ErrorHandler.ps1"

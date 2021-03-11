@@ -29,6 +29,7 @@ function Invoke-Scaffold {
       New-Item "$scriptFilePath" -ItemType File
 
       $errorHelper = Get-ErrorHelperContent
+      $logWriter = Get-LogWriter
       $logFile = ""
       $logHelper = ""
       $logCleanupStep = ""
@@ -47,7 +48,6 @@ New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
 "@
 
       $logHelper = Get-LogHelperContent
-
       }
       else {
         $logFile = @"
@@ -71,7 +71,7 @@ function Invoke-$ScriptName {
   [CmdletBinding()]
   param ()
   `$msg = "Starting process. `$(Get-Date)"
-  `$msg >> `$logFile
+  Write-Log -msg `$msg -logFile `$logFile
   try {
     Program -ErrorAction Stop
   }
@@ -80,13 +80,13 @@ function Invoke-$ScriptName {
     `$errorDetails = Get-ErrorDetails -error `$_
     `$msg = "Top level issue:``n"
     `$msg += `$errorDetails | ConvertTo-Json
-    `$msg >> `$logFile
+    Write-Log -msg `$msg -logFile `$logFile
     throw `$_
   }
 
   finally {
     `$msg = "Finished process. `$(Get-Date)``n"
-    `$msg >> `$logFile
+    Write-Log -msg `$msg -logFile `$logFile
     $logCleanupStep
   }
 }
@@ -94,6 +94,8 @@ function Invoke-$ScriptName {
 $errorHelper
 
 $logHelper
+
+$logWriter
 
 Invoke-$ScriptName -ErrorAction Stop
 
