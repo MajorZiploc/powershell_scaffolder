@@ -1,4 +1,6 @@
-﻿function Initialize-Module {
+﻿. "$PSScriptRoot/../Private/Shared-Res.ps1"
+
+function Initialize-Module {
 param (
   [Parameter(Mandatory = $false)]
   [string]
@@ -226,7 +228,7 @@ function Invoke-$ModuleName {
     `$msg = "Finished process. `$(Get-Date)``n"
     `$msg >> `$logFile
     # Clean up old logs
-    Clean-Logs -logFileNamePrefix `$appConfig.logFileName -keepLogsForNDays `$appConfig.keepLogsForNDays
+    Clean-Logs -logFileNamePrefix `$appConfig.logFileName -keepLogsForNDays `$appConfig.keepLogsForNDays -logFolder "`$logFolder"
     # update last state json
     `$lastState | ConvertTo-Json > `$lastStateFilePath
   }
@@ -239,64 +241,10 @@ Invoke-$ModuleName -ErrorAction Stop
 
       $runMainFile > "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1"
 
-      $logHelper = @"
-
-function Clean-Logs {
-  [CmdletBinding()]
-  param(
-    [Parameter(Mandatory = `$true)]
-    [string]
-    `$logFileNamePrefix
-    ,
-    [Parameter(Mandatory = `$true)]
-    [ValidateRange(0, [int]::MaxValue)]
-    [int]
-    `$keepLogsForNDays
-    ,
-    [Parameter(Mandatory = `$true)]
-    [string]
-    `$logFolder
-  )
-  [array]`$logs = Get-ChildItem -Path "`$logFolder" | Where-Object {`$_.Name -imatch "`$(`$logFileNamePrefix)_(\S+)?_log\.txt"}
-  `$logs | ForEach-Object {
-    `$r = (`$_.Name | Select-String -Pattern "`$(`$logFileNamePrefix)_(\S+)?_log\.txt");
-    `$match = `$r.Matches.Groups[1].Value;
-    [datetime]`$logDate = `$match
-    `$now = Get-Date
-    `$timespan = `$now - `$logDate
-    `$daysOld = `$timespan.Days
-    if (`$daysOld -gt `$keepLogsForNDays) {
-      # delete the log file
-      Remove-Item -Path `$_.FullName
-    }
-  }
-}
-"@
-
+      $logHelper = Get-LogHelperContent
       $logHelper > "$Path\$ModuleName\Private\LogHelper.ps1"
 
-
-      $errorHandler = @"
-
-function Get-ErrorDetails {
-  [CmdletBinding()]
-  param (
-    [Parameter(Mandatory=`$true)]
-    `$error
-  )
-
-  return @{
-    ScriptStackTrace = `$error.ScriptStackTrace
-    StackTrace = `$error.Exception.StackTrace
-    Message = `$error.Exception.Message
-    FullyQualifiedErrorId = `$error.FullyQualifiedErrorId
-    TargetObject = `$error.TargetObject
-    ErrorDetails = `$error.ErrorDetails
-  }
-}
-
-"@
-
+      $errorHandler = Get-ErrorHelperContent
       $errorHandler > "$Path\$ModuleName\Private\ErrorHandler.ps1"
 
       $appJson = "{`"logFileName`": `"$($ModuleName)`", `"keepLogsForNDays`": 14}"

@@ -40,7 +40,7 @@ New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
         $logCleanupStep = @"
 
     # Clean up old logs
-    Clean-Logs -logFileNamePrefix `$logFileName -keepLogsForNDays `$keepLogsForNDays
+    Clean-Logs -logFileNamePrefix `$logFileName -keepLogsForNDays `$keepLogsForNDays -logFolder "`$logFolder"
 "@
 
       $logHelper = @"
