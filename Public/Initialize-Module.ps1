@@ -187,12 +187,13 @@ Set-StrictMode -Version 3
 
 # The environment to use. Determines the app config and state objects to use
 `$environ = 'test'
-`$appConfig = Get-Content -Path `$PSScriptRoot"\..\settings\`$environ\$appConfigEndPath" -Raw | ConvertFrom-Json
+`$settingsFolder = "`$PSScriptRoot\..\settings"
+`$appConfig = Get-Content -Path "`$settingsFolder\`$environ\$appConfigEndPath" -Raw | ConvertFrom-Json
 # Secrets object. Things that you do not want to put in git go inside this. Add to the secrets json in the private folder
 # Need to uncomment this line if you want to use secrets. You will likely need to create the file aswell.
 # `$secrets = Get-Content -Path `$PSScriptRoot"\..\$privateConfigEndPath" -Raw | ConvertFrom-Json
 
-`$lastStateFilePath = "`$PSScriptRoot\..\settings\`$environ\$lastStateEndPath"
+`$lastStateFilePath = "`$settingsFolder\`$environ\$lastStateEndPath"
 `$lastState = Get-Content -Path `$lastStateFilePath -Raw | ConvertFrom-Json
 
 `$logFolder = "`$PSScriptRoot/../logs"
