@@ -1,4 +1,6 @@
-﻿function Initialize-Module {
+﻿. "$PSScriptRoot/../Private/Shared-Res.ps1"
+
+function Initialize-Module {
 param (
   [Parameter(Mandatory = $false)]
   [string]
@@ -185,22 +187,24 @@ Set-StrictMode -Version 3
 
 # The environment to use. Determines the app config and state objects to use
 `$environ = 'test'
-`$appConfig = Get-Content -Path `$PSScriptRoot"\..\settings\`$environ\$appConfigEndPath" -Raw | ConvertFrom-Json
+`$settingsFolder = "`$PSScriptRoot\..\settings"
+`$appConfig = Get-Content -Path "`$settingsFolder\`$environ\$appConfigEndPath" -Raw | ConvertFrom-Json
 # Secrets object. Things that you do not want to put in git go inside this. Add to the secrets json in the private folder
 # Need to uncomment this line if you want to use secrets. You will likely need to create the file aswell.
 # `$secrets = Get-Content -Path `$PSScriptRoot"\..\$privateConfigEndPath" -Raw | ConvertFrom-Json
 
-`$lastStateFilePath = "`$PSScriptRoot\..\settings\`$environ\$lastStateEndPath"
+`$lastStateFilePath = "`$settingsFolder\`$environ\$lastStateEndPath"
 `$lastState = Get-Content -Path `$lastStateFilePath -Raw | ConvertFrom-Json
 
+`$logFolder = "`$PSScriptRoot/../logs"
 # Create log directory if it does not exist, does not destroy the folder if it exists already
-New-Item -ItemType Directory -Force -Path "`$PSScriptRoot/../logs" | Out-Null
+New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
 
 `$startTime = Get-Date
 `$logDate = `$startTime.ToString("yyyy-MM-dd") 
 # The log file. Where to perform logging. Write(append) to it like so: `$msg >> `$logFile
 # NOTE: To override the file (deletes the current content): `$msg > `$logFile
-`$logFile = "`$PSScriptRoot/../logs/`$(`$appConfig.logFileName)_`$(`$logDate)_log.txt"
+`$logFile = "`$logFolder/`$(`$appConfig.logFileName)_`$(`$logDate)_log.txt"
 
 
 function Invoke-$ModuleName {
@@ -225,7 +229,7 @@ function Invoke-$ModuleName {
     `$msg = "Finished process. `$(Get-Date)``n"
     `$msg >> `$logFile
     # Clean up old logs
-    Clean-Logs -logFileNamePrefix `$appConfig.logFileName -keepLogsForNDays `$appConfig.keepLogsForNDays
+    Clean-Logs -logFileNamePrefix `$appConfig.logFileName -keepLogsForNDays `$appConfig.keepLogsForNDays -logFolder "`$logFolder"
     # update last state json
     `$lastState | ConvertTo-Json > `$lastStateFilePath
   }
@@ -238,60 +242,10 @@ Invoke-$ModuleName -ErrorAction Stop
 
       $runMainFile > "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1"
 
-      $logHelper = @"
-
-function Clean-Logs {
-  [CmdletBinding()]
-  param(
-    [Parameter(Mandatory = `$true)]
-    [string]
-    `$logFileNamePrefix
-    ,
-    [Parameter(Mandatory = `$true)]
-    [ValidateRange(0, [int]::MaxValue)]
-    [int]
-    `$keepLogsForNDays
-  )
-  [array]`$logs = Get-ChildItem -Path "`$PSScriptRoot/../logs" | Where-Object {`$_.Name -imatch "`$(`$logFileNamePrefix)_(\S+)?_log\.txt"}
-  `$logs | ForEach-Object {
-    `$r = (`$_.Name | Select-String -Pattern "`$(`$logFileNamePrefix)_(\S+)?_log\.txt");
-    `$match = `$r.Matches.Groups[1].Value;
-    [datetime]`$logDate = `$match
-    `$now = Get-Date
-    `$timespan = `$now - `$logDate
-    `$daysOld = `$timespan.Days
-    if (`$daysOld -gt `$keepLogsForNDays) {
-      # delete the log file
-      Remove-Item -Path `$_.FullName
-    }
-  }
-}
-"@
-
+      $logHelper = Get-LogHelperContent
       $logHelper > "$Path\$ModuleName\Private\LogHelper.ps1"
 
-
-      $errorHandler = @"
-
-function Get-ErrorDetails {
-  [CmdletBinding()]
-  param (
-    [Parameter(Mandatory=`$true)]
-    `$error
-  )
-
-  return @{
-    ScriptStackTrace = `$error.ScriptStackTrace
-    StackTrace = `$error.Exception.StackTrace
-    Message = `$error.Exception.Message
-    FullyQualifiedErrorId = `$error.FullyQualifiedErrorId
-    TargetObject = `$error.TargetObject
-    ErrorDetails = `$error.ErrorDetails
-  }
-}
-
-"@
-
+      $errorHandler = Get-ErrorHelperContent
       $errorHandler > "$Path\$ModuleName\Private\ErrorHandler.ps1"
 
       $appJson = "{`"logFileName`": `"$($ModuleName)`", `"keepLogsForNDays`": 14}"
