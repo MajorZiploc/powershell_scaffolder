@@ -31,9 +31,10 @@ function Invoke-Scaffold {
       $logCleanupStep = ""
       if ($ShouldUseAdvLogging) {
         $logFile = @"
+`$logFolder = "`$PSScriptRoot/logs"
 # Create log directory if it does not exist, does not destroy the folder if it exists already
-New-Item -ItemType Directory -Force -Path `"`$PSScriptRoot/logs/`$logFileName`" | Out-Null
-`$logFile = "`$PSScriptRoot/logs/`$logFileName/`$(`$logFileName)_`$(`$logDate)_log.txt"
+New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
+`$logFile = "`$logFolder/`$logFileName/`$(`$logFileName)_`$(`$logDate)_log.txt"
 `$keepLogsForNDays = 14
 "@
         $logCleanupStep = @"
@@ -55,8 +56,12 @@ function Clean-Logs {
     [ValidateRange(0, [int]::MaxValue)]
     [int]
     `$keepLogsForNDays
+    ,
+    [Parameter(Mandatory = `$true)]
+    [string]
+    `$logFolder
   )
-  [array]`$logs = Get-ChildItem -Path "`$PSScriptRoot/logs/`$logFileName" | Where-Object {`$_.Name -imatch "`$(`$logFileNamePrefix)_(\S+)?_log\.txt"}
+  [array]`$logs = Get-ChildItem -Path "`$logFolder/`$logFileName" | Where-Object {`$_.Name -imatch "`$(`$logFileNamePrefix)_(\S+)?_log\.txt"}
   `$logs | ForEach-Object {
     `$r = (`$_.Name | Select-String -Pattern "`$(`$logFileNamePrefix)_(\S+)?_log\.txt");
     `$match = `$r.Matches.Groups[1].Value;

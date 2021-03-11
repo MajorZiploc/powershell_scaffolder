@@ -193,14 +193,15 @@ Set-StrictMode -Version 3
 `$lastStateFilePath = "`$PSScriptRoot\..\settings\`$environ\$lastStateEndPath"
 `$lastState = Get-Content -Path `$lastStateFilePath -Raw | ConvertFrom-Json
 
+`$logFolder = "`$PSScriptRoot/../logs"
 # Create log directory if it does not exist, does not destroy the folder if it exists already
-New-Item -ItemType Directory -Force -Path "`$PSScriptRoot/../logs" | Out-Null
+New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
 
 `$startTime = Get-Date
 `$logDate = `$startTime.ToString("yyyy-MM-dd") 
 # The log file. Where to perform logging. Write(append) to it like so: `$msg >> `$logFile
 # NOTE: To override the file (deletes the current content): `$msg > `$logFile
-`$logFile = "`$PSScriptRoot/../logs/`$(`$appConfig.logFileName)_`$(`$logDate)_log.txt"
+`$logFile = "`$logFolder/`$(`$appConfig.logFileName)_`$(`$logDate)_log.txt"
 
 
 function Invoke-$ModuleName {
@@ -251,8 +252,12 @@ function Clean-Logs {
     [ValidateRange(0, [int]::MaxValue)]
     [int]
     `$keepLogsForNDays
+    ,
+    [Parameter(Mandatory = `$true)]
+    [string]
+    `$logFolder
   )
-  [array]`$logs = Get-ChildItem -Path "`$PSScriptRoot/../logs" | Where-Object {`$_.Name -imatch "`$(`$logFileNamePrefix)_(\S+)?_log\.txt"}
+  [array]`$logs = Get-ChildItem -Path "`$logFolder" | Where-Object {`$_.Name -imatch "`$(`$logFileNamePrefix)_(\S+)?_log\.txt"}
   `$logs | ForEach-Object {
     `$r = (`$_.Name | Select-String -Pattern "`$(`$logFileNamePrefix)_(\S+)?_log\.txt");
     `$match = `$r.Matches.Groups[1].Value;
