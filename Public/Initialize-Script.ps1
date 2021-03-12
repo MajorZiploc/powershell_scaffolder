@@ -35,10 +35,10 @@ function Invoke-Scaffold {
       $logCleanupStep = ""
       if ($ShouldUseAdvLogging) {
         $logFile = @"
-`$logFolder = "`$PSScriptRoot/logs"
+`$logFolder = "`$PSScriptRoot/logs/$ScriptName"
 # Create log directory if it does not exist, does not destroy the folder if it exists already
 New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
-`$logFile = "`$logFolder/$ScriptName/`$logFileName/`$(`$logFileName)_`$(`$logDate)_log.txt"
+`$logFile = "`$logFolder/`$(`$logFileName)_`$(`$logDate)_log.txt"
 `$keepLogsForNDays = 14
 "@
         $logCleanupStep = @"
@@ -58,6 +58,12 @@ New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
       $mainFile = @"
 Set-StrictMode -Version 1
 
+# The log file. Where to perform logging. Write(append) to it like so:
+#   For non structured data:
+#      Write-Log -msg `$msg -logFile "`$logFile"
+#   For structed data (hash maps or powershell custom objects): 
+#      Write-Json -jsonLike `$errorDetails -logFile "`$logFile" -shouldCompressJson `$appConfig.shouldCompressJson
+
 `$startTime = Get-Date
 `$preview = `$true
 `$shouldCompressJson = `$false
@@ -73,7 +79,7 @@ function Invoke-$ScriptName {
   [CmdletBinding()]
   param ()
   `$msg = "Starting process. `$(Get-Date)"
-  Write-Log -msg `$msg -logFile `$logFile
+  Write-Log -msg `$msg -logFile "`$logFile"
   try {
     Program -ErrorAction Stop
   }
@@ -81,14 +87,14 @@ function Invoke-$ScriptName {
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
     `$msg = "Top level issue:``n"
-    Write-Log -msg `$msg -logFile `$logFile
-    Write-Json -jsonLike `$errorDetails -logFile `$logFile -shouldCompressJson `$shouldCompressJson
+    Write-Log -msg `$msg -logFile "`$logFile"
+    Write-Json -jsonLike `$errorDetails -logFile "`$logFile" -shouldCompressJson `$shouldCompressJson
     throw `$_
   }
 
   finally {
     `$msg = "Finished process. `$(Get-Date)``n"
-    Write-Log -msg `$msg -logFile `$logFile
+    Write-Log -msg `$msg -logFile "`$logFile"
     $logCleanupStep
   }
 }

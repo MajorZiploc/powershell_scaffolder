@@ -202,8 +202,11 @@ New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
 
 `$startTime = Get-Date
 `$logDate = `$startTime.ToString("yyyy-MM-dd") 
-# The log file. Where to perform logging. Write(append) to it like so: `$msg >> `$logFile
-# NOTE: To override the file (deletes the current content): `$msg > `$logFile
+# The log file. Where to perform logging. Write(append) to it like so:
+#   For non structured data:
+#      Write-Log -msg `$msg -logFile "`$logFile"
+#   For structed data (hash maps or powershell custom objects): 
+#      Write-Json -jsonLike `$errorDetails -logFile "`$logFile" -shouldCompressJson `$appConfig.shouldCompressJson
 `$logFile = "`$logFolder/`$(`$appConfig.logFileName)_`$(`$logDate)_log.txt"
 
 
@@ -221,14 +224,14 @@ function Invoke-$ModuleName {
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
     `$msg = "Top level issue:``n"
-    Write-Log -msg `$msg -logFile `$logFile
-    Write-Json -jsonLike `$errorDetails -logFile `$logFile -shouldCompressJson `$appConfig.shouldCompressJson
+    Write-Log -msg `$msg -logFile "`$logFile"
+    Write-Json -jsonLike `$errorDetails -logFile "`$logFile" -shouldCompressJson `$appConfig.shouldCompressJson
     throw `$_
   }
 
   finally {
     `$msg = "Finished process. `$(Get-Date)``n"
-    Write-Log -msg `$msg -logFile `$logFile
+    Write-Log -msg `$msg -logFile "`$logFile"
     # Clean up old logs
     Clean-Logs -logFileNamePrefix `$appConfig.logFileName -keepLogsForNDays `$appConfig.keepLogsForNDays -logFolder "`$logFolder"
     # update last state json
