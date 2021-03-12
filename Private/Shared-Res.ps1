@@ -158,9 +158,9 @@ function Get-StartTimeInfo {
   param ()
 
   $startTimeInfo = @"
-`$startTime = Get-Date
-`$logDate = `$startTime.ToString("yyyy-MM-dd") 
-`$logTime = `$startTime.ToString("HH-mm-ss")
+New-Variable -Name startTime -Value `$(Get-Date) -Option ReadOnly -Force
+New-Variable -Name logDate -Value `$(`$startTime.ToString("yyyy-MM-dd")) -Option ReadOnly -Force
+New-Variable -Name logTime -Value `$(`$startTime.ToString("HH-mm-ss")) -Option ReadOnly -Force
 "@
   return $startTimeInfo
 }
@@ -192,10 +192,9 @@ DO NOT USE THE FOLLOWING VARIABLES.
   `$startTime
 
 FAQ:
-Why not make these variables constants or read-only?
-  If these variables are marked as constant or read-only.
-  Then running the project more than once will throw an error stating that the variable is already used.
-  If anyone has suggestions of how to fix this issue, then reach out!
+Why are these variables written to with force and are read-only? Why not use constants?
+  In some run environments, marking these variables as constants/read-only will throw errors if the program is run multiple times
+  That is why we are using read-only and setting them with force
 
 "@
   return $blackListedVars
