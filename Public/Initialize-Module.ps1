@@ -174,18 +174,14 @@ function Program {
 
       $mainFile > "$Path\$ModuleName\Private\Program.ps1"
 
+      $logingNotes = Get-LoggingNotes
+
       $runMainFile = @"
 # Only edit this file if you intend to write a powershell module or need to use secrets or change the environment
 # If you intend to use this as a powershell project, then edit the program file in the private directory
 # Makes powershell stricter by default to make code safer and more reliable
 
-# NOTE ON LOGGING:
-# Write(append) to the log files like so:
-#  logPath and summaryPath are optional. They default to the variables `$logFile and `$summaryFile
-#   For non structured data:
-#      Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
-#   For structured data (hash maps or powershell custom objects): 
-#      Write-Json -jsonLike `$data -logPath "`$logFile" -summaryPath "`$summaryFile"
+$logingNotes
 Set-StrictMode -Version 3
 
 # Import statements (follows the bash style dot sourcing notation)

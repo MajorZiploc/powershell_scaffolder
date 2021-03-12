@@ -128,3 +128,21 @@ function Write-Json {
 "@
   return $logWriter
 }
+
+function Get-LoggingNotes {
+  [CmdletBinding()]
+  param ()
+
+  $logingNotes = @"
+# NOTE ON LOGGING:
+# Write(append) to the log files like so:
+#  logPath and summaryPath are optional. They default to the variables `$logFile and `$summaryFile
+#   For non structured data:
+#      Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
+#   For structured data (hash maps or powershell custom objects): 
+#      Write-Json -jsonLike `$data -logPath "`$logFile" -summaryPath "`$summaryFile"
+
+"@
+  return $logingNotes
+}
+

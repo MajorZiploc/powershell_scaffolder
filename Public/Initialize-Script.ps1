@@ -36,6 +36,8 @@ function Invoke-Scaffold {
       $logCleaner = ""
       $logCleanupStep = @"
 "@
+      $logingNotes = Get-LoggingNotes
+
       if ($ShouldUseAdvLogging) {
         $logCleaner = Get-LogCleaner
 
@@ -50,14 +52,7 @@ function Invoke-Scaffold {
       }
 
       $mainFile = @"
-# NOTE ON LOGGING:
-# Write(append) to the log files like so:
-#  logPath and summaryPath are optional. They default to the variables `$logFile and `$summaryFile
-#   For non structured data:
-#      Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
-#   For structured data (hash maps or powershell custom objects): 
-#      Write-Json -jsonLike `$data -logPath "`$logFile" -summaryPath "`$summaryFile"
-
+$logingNotes
 Set-StrictMode -Version 1
 
 `$startTime = Get-Date
