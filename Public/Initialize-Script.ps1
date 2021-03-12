@@ -60,6 +60,7 @@ Set-StrictMode -Version 1
 
 `$startTime = Get-Date
 `$preview = `$true
+`$shouldCompressJson = `$false
 `$logDate = `$startTime.ToString("yyyy-MM-dd") 
 `$logFileName = `"$ScriptName`"
 $logFile
@@ -80,8 +81,8 @@ function Invoke-$ScriptName {
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
     `$msg = "Top level issue:``n"
-    `$msg += `$errorDetails | ConvertTo-Json
     Write-Log -msg `$msg -logFile `$logFile
+    Write-Json -jsonLike `$errorDetails -logFile `$logFile -shouldCompressJson `$shouldCompressJson
     throw `$_
   }
 

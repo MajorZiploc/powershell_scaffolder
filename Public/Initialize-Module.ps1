@@ -221,8 +221,8 @@ function Invoke-$ModuleName {
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
     `$msg = "Top level issue:``n"
-    `$msg += `$errorDetails | ConvertTo-Json
     Write-Log -msg `$msg -logFile `$logFile
+    Write-Json -jsonLike `$errorDetails -logFile `$logFile -shouldCompressJson `$appConfig.shouldCompressJson
     throw `$_
   }
 
@@ -251,7 +251,7 @@ Invoke-$ModuleName -ErrorAction Stop
       $errorHandler = Get-ErrorHelperContent
       $errorHandler > "$Path\$ModuleName\Private\ErrorHandler.ps1"
 
-      $appJson = "{`"logFileName`": `"$($ModuleName)`", `"keepLogsForNDays`": 14,`"preview`": true}"
+      $appJson = "{`"logFileName`": `"$($ModuleName)`", `"keepLogsForNDays`": 14, `"preview`": true, `"shouldCompressJson`": false}"
       $lastStateJson = "{`"state`": `"Any state from the last run of this program (or last update of this file) that is required for this run.`"}" 
       $privateConfigJson = "{`"password`": `"not_put_in_git`"}"
 

@@ -88,6 +88,25 @@ function Write-Log {
   `$msg | Out-File -FilePath "`$logFile" -Encoding utf8 -Append
 }
 
+function Write-Json {
+  [CmdletBinding()]
+  param (
+      [Parameter(Mandatory=`$true)]
+      `$jsonLike
+      ,
+      [Parameter(Mandatory=`$true)]
+      [string]
+      `$logFile
+      ,
+      [Parameter(Mandatory=`$true)]
+      [boolean]
+      `$shouldCompressJson
+  )
+
+  `$json = if (`$shouldCompressJson) { `$jsonLike | ConvertTo-Json -Compress } else { `$jsonLike | ConvertTo-Json }
+  Write-Log -msg "`$json" -logFile "`$logFile"
+}
+
 "@
   return $logWriter
 }
