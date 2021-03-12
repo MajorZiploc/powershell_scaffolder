@@ -255,9 +255,26 @@ Invoke-$ModuleName -ErrorAction Stop
       $errorHandler = Get-ErrorHelperContent
       $errorHandler > "$Path\$ModuleName\Private\ErrorHandler.ps1"
 
-      $appJson = "{`"logFileName`": `"$($ModuleName)`", `"keepLogsForNDays`": 14, `"preview`": true, `"summaryFolderName`": `"summary`", `"runFolderName`": `"per_run`"}"
-      $lastStateJson = "{`"state`": `"Any state from the last run of this program (or last update of this file) that is required for this run.`"}" 
-      $privateConfigJson = "{`"password`": `"not_put_in_git`"}"
+      $appJson = @"
+{
+    "logFileName": "$($ModuleName)",
+    "keepLogsForNDays": 14,
+    "preview": true,
+    "summaryFolderName": "summary",
+    "runFolderName": "per_run"
+}
+"@
+      $lastStateJson = @"
+{
+    "state":
+    "Any state from the last run of this program (or last update of this file) that is required for this run."}
+"@
+      $privateConfigJson = @"
+{
+    "password":
+    "not_put_in_git"
+}
+"@
 
       $appJson > $appConfig
       $lastStateJson > $lastStateConfig
