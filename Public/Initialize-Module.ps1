@@ -196,18 +196,20 @@ Set-StrictMode -Version 3
 `$lastStateFilePath = "`$settingsFolder\`$environ\$lastStateEndPath"
 `$lastState = Get-Content -Path `$lastStateFilePath -Raw | ConvertFrom-Json
 
-`$logFolder = "`$PSScriptRoot/../logs"
+`$thisScriptName = `$MyInvocation.MyCommand.Name -replace ".ps1", ""
+`$logFolder = "`$PSScriptRoot/../logs/`$thisScriptName"
 # Create log directory if it does not exist, does not destroy the folder if it exists already
 New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
 
 `$startTime = Get-Date
 `$logDate = `$startTime.ToString("yyyy-MM-dd") 
+`$logTime = `$startTime.ToString("HH-mm-ss")
 # The log file. Where to perform logging. Write(append) to it like so:
 #   For non structured data:
 #      Write-Log -msg `$msg -logFile "`$logFile"
 #   For structed data (hash maps or powershell custom objects): 
 #      Write-Json -jsonLike `$data -logFile "`$logFile" -shouldCompressJson `$appConfig.shouldCompressJson
-`$logFile = "`$logFolder/`$(`$appConfig.logFileName)_`$(`$logDate)_log.txt"
+`$logFile = "`$logFolder/`$logDate/`$(`$appConfig.logFileName)_`$(`$logTime)_log.txt"
 
 
 function Invoke-$ModuleName {

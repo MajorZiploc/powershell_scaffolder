@@ -35,10 +35,11 @@ function Invoke-Scaffold {
       $logCleanupStep = ""
       if ($ShouldUseAdvLogging) {
         $logFile = @"
-`$logFolder = "`$PSScriptRoot/logs/$ScriptName"
+`$thisScriptName = `$MyInvocation.MyCommand.Name -replace ".ps1", ""
+`$logFolder = "`$PSScriptRoot/logs/`$thisScriptName"
 # Create log directory if it does not exist, does not destroy the folder if it exists already
 New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
-`$logFile = "`$logFolder/`$(`$logFileName)_`$(`$logDate)_log.txt"
+`$logFile = "`$logFolder/`$logDate/`$(`$logFileName)_`$(`$logTime)_log.txt"
 `$keepLogsForNDays = 14
 "@
         $logCleanupStep = @"
@@ -51,7 +52,7 @@ New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
       }
       else {
         $logFile = @"
-`$logFile = "`$(`$logFileName)_`$(`$logDate)_log.txt"
+`$logFile = "`$logDate/`$(`$logFileName)_`$(`$logTime)_log.txt"
 "@
       }
 
@@ -68,6 +69,7 @@ Set-StrictMode -Version 1
 `$preview = `$true
 `$shouldCompressJson = `$false
 `$logDate = `$startTime.ToString("yyyy-MM-dd") 
+`$logTime = `$startTime.ToString("HH-mm-ss")
 `$logFileName = `"$ScriptName`"
 $logFile
 
