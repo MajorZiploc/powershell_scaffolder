@@ -169,7 +169,7 @@ Describe "<name_of_function1> PS$PSVersion Integrations tests" {
 
 $logingNotes
 # See the black listed variables file to see what variables to not reassign variables:
-#  $ModuleName\$blackListedFileName
+#  $ModuleName/$blackListedFileName
 
 function Program {
   #[CmdletBinding()]
