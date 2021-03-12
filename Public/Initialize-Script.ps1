@@ -32,7 +32,7 @@ function Invoke-Scaffold {
       $startTimeInfo = Get-StartTimeInfo
       $logWriter = Get-LogWriter
       $logFolder = @"
-`$logFolder = "./logs/`$thisScriptName"
+New-Variable -Name logFolder -Value `$("./logs/`$thisScriptName") -Option ReadOnly -Force
 "@
       $logCleaner = ""
       $logCleanupStep = ""
@@ -42,7 +42,7 @@ function Invoke-Scaffold {
         $logCleaner = Get-LogCleaner
 
         $logFolder = @"
-`$logFolder = "`$PSScriptRoot/logs/`$thisScriptName"
+New-Variable -Name logFolder -Value `$("`$PSScriptRoot/logs/`$thisScriptName") -Option ReadOnly -Force
 "@
 
         $logCleanupStep = @"
@@ -55,19 +55,19 @@ function Invoke-Scaffold {
 $logingNotes
 Set-StrictMode -Version 1
 
-`$preview = `$true
+New-Variable -Name preview -Value `$(`$true) -Option ReadOnly -Force
 $startTimeInfo
-`$logFileName = `"$ScriptName`"
-`$summaryFolderName = "summary"
-`$runFolderName = "per_run"
-`$thisScriptName = `$MyInvocation.MyCommand.Name -replace ".ps1", ""
+New-Variable -Name logFileName -Value `$("$ScriptName") -Option ReadOnly -Force
+New-Variable -Name summaryFolderName -Value `$("summary") -Option ReadOnly -Force
+New-Variable -Name runFolderName -Value `$("per_run") -Option ReadOnly -Force
+New-Variable -Name thisScriptName -Value `$(`$MyInvocation.MyCommand.Name -replace ".ps1", "") -Option ReadOnly -Force
 $logFolder
 # Create log directory if it does not exist, does not destroy the folder if it exists already
 New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$runFolderName" | Out-Null
 New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$summaryFolderName" | Out-Null
-`$logFile = "`$logFolder/`$logDate/`$runFolderName/`$(`$logFileName)_`$(`$logTime)_log.txt"
-`$summaryFile = "`$logFolder/`$logDate/`$summaryFolderName/`$(`$logFileName)_log.txt"
-`$keepLogsForNDays = 14
+New-Variable -Name logFile -Value `$("`$logFolder/`$logDate/`$runFolderName/`$(`$logFileName)_`$(`$logTime)_log.txt") -Option ReadOnly -Force
+New-Variable -Name summaryFile -Value `$("`$logFolder/`$logDate/`$summaryFolderName/`$(`$logFileName)_log.txt") -Option ReadOnly -Force
+New-Variable -Name keepLogsForNDays -Value `$(14) -Option ReadOnly -Force
 
 function Program {
   return 0
