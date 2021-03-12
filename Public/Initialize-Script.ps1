@@ -30,29 +30,17 @@ function Invoke-Scaffold {
 
       $errorHelper = Get-ErrorHelperContent
       $logWriter = Get-LogWriter
-      $logFile = ""
-      $logHelper = ""
-      $logCleanupStep = ""
-      if ($ShouldUseAdvLogging) {
-        $logFile = @"
-`$thisScriptName = `$MyInvocation.MyCommand.Name -replace ".ps1", ""
+      $logFolder = @"
 `$logFolder = "`$PSScriptRoot/logs/`$thisScriptName"
-# Create log directory if it does not exist, does not destroy the folder if it exists already
-New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
-`$logFile = "`$logFolder/`$logDate/`$(`$logFileName)_`$(`$logTime)_log.txt"
-`$keepLogsForNDays = 14
 "@
-        $logCleanupStep = @"
-
+      $logHelper = Get-LogHelperContent
+      $logCleanupStep = @"
     # Clean up old logs
     Clean-Logs -keepLogsForNDays `$keepLogsForNDays -logFolder "`$logFolder"
 "@
-
-      $logHelper = Get-LogHelperContent
-      }
-      else {
-        $logFile = @"
-`$logFile = "`$logDate/`$(`$logFileName)_`$(`$logTime)_log.txt"
+      if ($ShouldUseAdvLogging) {
+        $logFolder = @"
+`$logFolder = "`$PSScriptRoot/logs/`$thisScriptName"
 "@
       }
 
@@ -63,15 +51,20 @@ Set-StrictMode -Version 1
 #   For non structured data:
 #      Write-Log -msg `$msg -logFile "`$logFile"
 #   For structed data (hash maps or powershell custom objects): 
-#      Write-Json -jsonLike `$data -logFile "`$logFile" -shouldCompressJson `$appConfig.shouldCompressJson
+#      Write-Json -jsonLike `$data -logFile "`$logFile"
 
 `$startTime = Get-Date
 `$preview = `$true
-`$shouldCompressJson = `$false
 `$logDate = `$startTime.ToString("yyyy-MM-dd") 
 `$logTime = `$startTime.ToString("HH-mm-ss")
 `$logFileName = `"$ScriptName`"
-$logFile
+$logFolder
+`$thisScriptName = `$MyInvocation.MyCommand.Name -replace ".ps1", ""
+# Create log directory if it does not exist, does not destroy the folder if it exists already
+New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
+`$logFile = "`$logFolder/`$logDate/`$(`$logFileName)_`$(`$logTime)_log.txt"
+`$summaryFile = "`$logFolder/`$logDate/summary/`$(`$logFileName)_log.txt"
+`$keepLogsForNDays = 14
 
 function Program {
   return 0
@@ -90,7 +83,7 @@ function Invoke-$ScriptName {
     `$errorDetails = Get-ErrorDetails -error `$_
     `$msg = "Top level issue:``n"
     Write-Log -msg `$msg -logFile "`$logFile"
-    Write-Json -jsonLike `$errorDetails -logFile "`$logFile" -shouldCompressJson `$shouldCompressJson
+    Write-Json -jsonLike `$errorDetails -logFile "`$logFile"
     throw `$_
   }
 
