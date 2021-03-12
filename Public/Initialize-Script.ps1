@@ -34,8 +34,7 @@ function Invoke-Scaffold {
 `$logFolder = "./logs/`$thisScriptName"
 "@
       $logCleaner = ""
-      $logCleanupStep = @"
-"@
+      $logCleanupStep = ""
       $logingNotes = Get-LoggingNotes
 
       if ($ShouldUseAdvLogging) {
