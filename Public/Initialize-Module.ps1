@@ -157,8 +157,9 @@ Describe "<name_of_function1> PS$PSVersion Integrations tests" {
       $unitTestString > "$Path\$ModuleName\Tests\$ModuleName.Tests.ps1"
 
       $mainFile = @"
-# . `$PSScriptRoot"/<private_file_name>.ps1"
-# . `$PSScriptRoot"/../Public/<public_file_name>.ps1"
+# Imports from same directory as this file
+. `$PSScriptRoot"/LogHelper.ps1"
+. `$PSScriptRoot"/ErrorHandler.ps1"
 
 function Program {
   #[CmdletBinding()]
