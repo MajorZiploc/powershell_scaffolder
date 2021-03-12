@@ -59,6 +59,7 @@ New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
 Set-StrictMode -Version 1
 
 `$startTime = Get-Date
+`$preview = `$true
 `$logDate = `$startTime.ToString("yyyy-MM-dd") 
 `$logFileName = `"$ScriptName`"
 $logFile
