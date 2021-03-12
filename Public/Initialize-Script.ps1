@@ -33,14 +33,19 @@ function Invoke-Scaffold {
       $logFolder = @"
 `$logFolder = "./logs/`$thisScriptName"
 "@
-      $logHelper = Get-LogHelperContent
+      $logCleaner = ""
+      $logCleanupStep = @"
+"@
+      if ($ShouldUseAdvLogging) {
+        $logCleaner = Get-LogCleaner
+
+        $logFolder = @"
+`$logFolder = "`$PSScriptRoot/logs/`$thisScriptName"
+"@
+
       $logCleanupStep = @"
     # Clean up old logs
     Clean-Logs -keepLogsForNDays `$keepLogsForNDays -logFolder "`$logFolder"
-"@
-      if ($ShouldUseAdvLogging) {
-        $logFolder = @"
-`$logFolder = "`$PSScriptRoot/logs/`$thisScriptName"
 "@
       }
 
@@ -99,7 +104,7 @@ function Invoke-$ScriptName {
   }
 }
 $errorHelper
-$logHelper
+$logCleaner
 $logWriter
 Invoke-$ScriptName -ErrorAction Stop
 

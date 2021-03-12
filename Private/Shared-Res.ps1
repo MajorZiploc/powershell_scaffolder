@@ -1,4 +1,4 @@
-function Get-LogHelperContent {
+function Get-LogCleaner {
   [CmdletBinding()]
   param ()
   $logHelper = @"

@@ -252,7 +252,7 @@ Invoke-$ModuleName -ErrorAction Stop
 
       $runMainFile > "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1"
 
-      $logHelper = Get-LogHelperContent
+      $logHelper = Get-LogCleaner
       $logWriter = Get-LogWriter
       $logHelper > "$Path\$ModuleName\Private\LogHelper.ps1"
       $logWriter >> "$Path\$ModuleName\Private\LogHelper.ps1"
