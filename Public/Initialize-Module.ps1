@@ -168,7 +168,7 @@ Describe "<name_of_function1> PS$PSVersion Integrations tests" {
 . `$PSScriptRoot"/ErrorHandler.ps1"
 
 $logingNotes
-# See the black listed variables file to see what variables to not reassign variables:
+# See the black listed variables file to see what variables to not reassign:
 #  $ModuleName/$blackListedFileName
 
 function Program {
