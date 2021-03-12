@@ -29,47 +29,45 @@ function Invoke-Scaffold {
       New-Item "$scriptFilePath" -ItemType File
 
       $errorHelper = Get-ErrorHelperContent
+      $startTimeInfo = Get-StartTimeInfo
       $logWriter = Get-LogWriter
-      $logFile = ""
-      $logHelper = ""
+      $logFolder = @"
+`$logFolder = "./logs/`$thisScriptName"
+"@
+      $logCleaner = ""
       $logCleanupStep = ""
+      $logingNotes = Get-LoggingNotes
+
       if ($ShouldUseAdvLogging) {
-        $logFile = @"
-`$logFolder = "`$PSScriptRoot/logs/$ScriptName"
-# Create log directory if it does not exist, does not destroy the folder if it exists already
-New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
-`$logFile = "`$logFolder/`$(`$logFileName)_`$(`$logDate)_log.txt"
-`$keepLogsForNDays = 14
+        $logCleaner = Get-LogCleaner
+
+        $logFolder = @"
+`$logFolder = "`$PSScriptRoot/logs/`$thisScriptName"
 "@
+
         $logCleanupStep = @"
-
-    # Clean up old logs
-    Clean-Logs -logFileNamePrefix `$logFileName -keepLogsForNDays `$keepLogsForNDays -logFolder "`$logFolder"
-"@
-
-      $logHelper = Get-LogHelperContent
-      }
-      else {
-        $logFile = @"
-`$logFile = "`$(`$logFileName)_`$(`$logDate)_log.txt"
+# Clean up old logs
+    Clean-Logs -keepLogsForNDays `$keepLogsForNDays -logFolder "`$logFolder"
 "@
       }
 
       $mainFile = @"
+$logingNotes
 Set-StrictMode -Version 1
 
-# The log file. Where to perform logging. Write(append) to it like so:
-#   For non structured data:
-#      Write-Log -msg `$msg -logFile "`$logFile"
-#   For structed data (hash maps or powershell custom objects): 
-#      Write-Json -jsonLike `$data -logFile "`$logFile" -shouldCompressJson `$appConfig.shouldCompressJson
-
-`$startTime = Get-Date
 `$preview = `$true
-`$shouldCompressJson = `$false
-`$logDate = `$startTime.ToString("yyyy-MM-dd") 
+$startTimeInfo
 `$logFileName = `"$ScriptName`"
-$logFile
+`$summaryFolderName = "summary"
+`$runFolderName = "per_run"
+`$thisScriptName = `$MyInvocation.MyCommand.Name -replace ".ps1", ""
+$logFolder
+# Create log directory if it does not exist, does not destroy the folder if it exists already
+New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$runFolderName" | Out-Null
+New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$summaryFolderName" | Out-Null
+`$logFile = "`$logFolder/`$logDate/`$runFolderName/`$(`$logFileName)_`$(`$logTime)_log.txt"
+`$summaryFile = "`$logFolder/`$logDate/`$summaryFolderName/`$(`$logFileName)_log.txt"
+`$keepLogsForNDays = 14
 
 function Program {
   return 0
@@ -79,7 +77,7 @@ function Invoke-$ScriptName {
   [CmdletBinding()]
   param ()
   `$msg = "Starting process. `$(Get-Date)"
-  Write-Log -msg `$msg -logFile "`$logFile"
+  Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
   try {
     Program -ErrorAction Stop
   }
@@ -87,19 +85,19 @@ function Invoke-$ScriptName {
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
     `$msg = "Top level issue:``n"
-    Write-Log -msg `$msg -logFile "`$logFile"
-    Write-Json -jsonLike `$errorDetails -logFile "`$logFile" -shouldCompressJson `$shouldCompressJson
+    Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
+    Write-Json -jsonLike `$errorDetails -logPath "`$logFile" -summaryPath "`$summaryFile"
     throw `$_
   }
 
   finally {
     `$msg = "Finished process. `$(Get-Date)``n"
-    Write-Log -msg `$msg -logFile "`$logFile"
+    Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
     $logCleanupStep
   }
 }
 $errorHelper
-$logHelper
+$logCleaner
 $logWriter
 Invoke-$ScriptName -ErrorAction Stop
 

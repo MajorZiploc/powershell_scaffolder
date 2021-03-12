@@ -174,10 +174,15 @@ function Program {
 
       $mainFile > "$Path\$ModuleName\Private\Program.ps1"
 
+      $logingNotes = Get-LoggingNotes
+      $startTimeInfo = Get-StartTimeInfo
+
       $runMainFile = @"
-# Only edit this file if you intend to write a powershell module or need to use secrets
+# Only edit this file if you intend to write a powershell module or need to use secrets or change the environment
 # If you intend to use this as a powershell project, then edit the program file in the private directory
 # Makes powershell stricter by default to make code safer and more reliable
+
+$logingNotes
 Set-StrictMode -Version 3
 
 # Import statements (follows the bash style dot sourcing notation)
@@ -196,25 +201,24 @@ Set-StrictMode -Version 3
 `$lastStateFilePath = "`$settingsFolder\`$environ\$lastStateEndPath"
 `$lastState = Get-Content -Path `$lastStateFilePath -Raw | ConvertFrom-Json
 
-`$logFolder = "`$PSScriptRoot/../logs"
+`$thisScriptName = `$MyInvocation.MyCommand.Name -replace ".ps1", ""
+`$logFolder = "`$PSScriptRoot/../logs/`$thisScriptName"
+$startTimeInfo
 # Create log directory if it does not exist, does not destroy the folder if it exists already
-New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
+New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$(`$appConfig.runFolderName)" | Out-Null
+New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$(`$appConfig.summaryFolderName)" | Out-Null
 
-`$startTime = Get-Date
-`$logDate = `$startTime.ToString("yyyy-MM-dd") 
-# The log file. Where to perform logging. Write(append) to it like so:
-#   For non structured data:
-#      Write-Log -msg `$msg -logFile "`$logFile"
-#   For structed data (hash maps or powershell custom objects): 
-#      Write-Json -jsonLike `$data -logFile "`$logFile" -shouldCompressJson `$appConfig.shouldCompressJson
-`$logFile = "`$logFolder/`$(`$appConfig.logFileName)_`$(`$logDate)_log.txt"
-
+`$logFile = "`$logFolder/`$logDate/`$(`$appConfig.runFolderName)/`$(`$appConfig.logFileName)_`$(`$logTime)_log.txt"
+`$summaryFile = "`$logFolder/`$logDate/`$(`$appConfig.summaryFolderName)/`$(`$appConfig.logFileName)_log.txt"
 
 function Invoke-$ModuleName {
   [CmdletBinding()]
   param ()
-  `$msg = "Starting process. `$(Get-Date)"
-  Write-Log -msg `$msg -logFile `$logFile
+  `$msg = "Starting process. `$(Get-Date)``n"
+  `$msg += "environment: `$environ``n"
+  `$msg += "appConfig:"
+  Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
+  Write-Json -jsonLike `$appConfig -logPath "`$logFile" -summaryPath "`$summaryFile"
 
   try {
     # Program is where you should write your normal powershell script code
@@ -223,17 +227,17 @@ function Invoke-$ModuleName {
 
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
-    `$msg = "Top level issue:``n"
-    Write-Log -msg `$msg -logFile "`$logFile"
-    Write-Json -jsonLike `$errorDetails -logFile "`$logFile" -shouldCompressJson `$appConfig.shouldCompressJson
+    `$msg = "Top level issue:"
+    Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
+    Write-Json -jsonLike `$errorDetails -logPath "`$logFile" -summaryPath "`$summaryFile"
     throw `$_
   }
 
   finally {
     `$msg = "Finished process. `$(Get-Date)``n"
-    Write-Log -msg `$msg -logFile "`$logFile"
+    Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
     # Clean up old logs
-    Clean-Logs -logFileNamePrefix `$appConfig.logFileName -keepLogsForNDays `$appConfig.keepLogsForNDays -logFolder "`$logFolder"
+    Clean-Logs -keepLogsForNDays `$appConfig.keepLogsForNDays -logFolder "`$logFolder"
     # update last state json
     `$lastState | ConvertTo-Json > `$lastStateFilePath
   }
@@ -246,7 +250,7 @@ Invoke-$ModuleName -ErrorAction Stop
 
       $runMainFile > "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1"
 
-      $logHelper = Get-LogHelperContent
+      $logHelper = Get-LogCleaner
       $logWriter = Get-LogWriter
       $logHelper > "$Path\$ModuleName\Private\LogHelper.ps1"
       $logWriter >> "$Path\$ModuleName\Private\LogHelper.ps1"
@@ -254,9 +258,25 @@ Invoke-$ModuleName -ErrorAction Stop
       $errorHandler = Get-ErrorHelperContent
       $errorHandler > "$Path\$ModuleName\Private\ErrorHandler.ps1"
 
-      $appJson = "{`"logFileName`": `"$($ModuleName)`", `"keepLogsForNDays`": 14, `"preview`": true, `"shouldCompressJson`": false}"
-      $lastStateJson = "{`"state`": `"Any state from the last run of this program (or last update of this file) that is required for this run.`"}" 
-      $privateConfigJson = "{`"password`": `"not_put_in_git`"}"
+      $appJson = @"
+{
+  "preview": true,
+  "keepLogsForNDays": 14,
+  "logFileName": "$($ModuleName)",
+  "summaryFolderName": "summary",
+  "runFolderName": "per_run"
+}
+"@
+      $lastStateJson = @"
+{
+  "state": "Any state from the last run of this program (or last update of this file) that is required for this run."
+}
+"@
+      $privateConfigJson = @"
+{
+  "password": "not_put_in_git"
+}
+"@
 
       $appJson > $appConfig
       $lastStateJson > $lastStateConfig
