@@ -134,13 +134,18 @@ function Get-LoggingNotes {
   param ()
 
   $logingNotes = @"
-# NOTE ON LOGGING:
+# NOTE ON LOGGING: THESE HELPER LOGGING FUNCTIONS ARE REQUIRED TO BE USED.
 # Write(append) to the log files like so:
-#  logPath and summaryPath are optional. They default to the variables `$logFile and `$summaryFile
 #   For non structured data:
 #      Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
 #   For structured data (hash maps or powershell custom objects): 
 #      Write-Json -jsonLike `$data -logPath "`$logFile" -summaryPath "`$summaryFile"
+#   note: logPath and summaryPath are optional. They default to the variables `$logFile and `$summaryFile
+# Why do I have to use these for logging?
+# These helper functions use the utf-8 writing format which is required to parse the logs
+# Default writing format is utf-16 for powershell 5.1 and lower.
+#   This is the binary format, and not consumed as text by other programs
+# These helper functions also write to multiple files in different formats depending on the file
 
 "@
   return $logingNotes
