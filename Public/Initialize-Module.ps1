@@ -206,7 +206,7 @@ New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
 #   For non structured data:
 #      Write-Log -msg `$msg -logFile "`$logFile"
 #   For structed data (hash maps or powershell custom objects): 
-#      Write-Json -jsonLike `$errorDetails -logFile "`$logFile" -shouldCompressJson `$appConfig.shouldCompressJson
+#      Write-Json -jsonLike `$data -logFile "`$logFile" -shouldCompressJson `$appConfig.shouldCompressJson
 `$logFile = "`$logFolder/`$(`$appConfig.logFileName)_`$(`$logDate)_log.txt"
 
 
