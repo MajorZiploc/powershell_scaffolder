@@ -141,6 +141,8 @@ function Get-LoggingNotes {
 #   For structured data (hash maps or powershell custom objects): 
 #      Write-Json -jsonLike `$data -logPath "`$logFile" -summaryPath "`$summaryFile"
 #   note: logPath and summaryPath are optional. They default to the variables `$logFile and `$summaryFile
+#   note: when using the `$msg variable to store your message. Make sure to clear out the variable like so:
+#        `$msg = ""
 # Why do I have to use these for logging?
 # These helper functions use the utf-8 writing format which is required to parse the logs
 # Default writing format is utf-16 for powershell 5.1 and lower.
@@ -161,4 +163,40 @@ function Get-StartTimeInfo {
 `$logTime = `$startTime.ToString("HH-mm-ss")
 "@
   return $startTimeInfo
+}
+
+function Get-BlackListedVars {
+  [CmdletBinding()]
+  param ()
+
+  $blackListedVars = @"
+
+These variables are set in the public invoke functions
+If they are overridden, then it can lead to unexpected behavior
+
+DO NOT USE THE FOLLOWING VARIABLES.
+
+  `$appConfig
+  `$lastState
+  `$lastStateFilePath
+  `$thisScriptName 
+  `$settingsFolder
+  `$secrets 
+  `$logFile
+  `$logFolder
+  `$logDate
+  `$logTime
+  `$logFile
+  `$summaryFile
+  `$environ
+  `$startTime
+
+FAQ:
+Why not make these variables constants or read-only?
+  If these variables are marked as constant or read-only.
+  Then running the project more than once will throw an error stating that the variable is already used.
+  If anyone has suggestions of how to fix this issue, then reach out!
+
+"@
+  return $blackListedVars
 }

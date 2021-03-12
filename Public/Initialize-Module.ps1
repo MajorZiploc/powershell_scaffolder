@@ -56,6 +56,7 @@ function Invoke-Scaffold {
       if (($null -eq $CopyRight) -or '' -eq $CopyRight) {
         $CopyRight = "N/A"
       }
+
       # Create the module and private function directories
       mkdir $Path\$ModuleName
       mkdir $Path\$ModuleName\Private
@@ -74,6 +75,8 @@ function Invoke-Scaffold {
       $lastStateConfigProd = "$Path\$ModuleName\settings\prod\$lastStateEndPath"
       $privateConfigEndPath = "Private\secrets.json"
       $privateConfig = "$Path\$ModuleName\$privateConfigEndPath"
+      $blackListedFileName = "BlackListedVariables.txt"
+
       #Create the module and related files
       New-Item "$Path\$ModuleName\$ModuleName.psm1" -ItemType File
       New-Item "$Path\$ModuleName\$ModuleName.Format.ps1xml" -ItemType File
@@ -83,6 +86,7 @@ function Invoke-Scaffold {
       New-Item "$Path\$ModuleName\Private\LogHelper.ps1" -ItemType File
       New-Item "$Path\$ModuleName\Private\Program.ps1" -ItemType File
       New-Item "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1" -ItemType File
+      New-Item "$Path\$ModuleName\$blackListedFileName" -ItemType File
       New-Item $appConfig -ItemType File
       New-Item $lastStateConfig -ItemType File
       New-Item $appConfigProd -ItemType File
@@ -164,6 +168,8 @@ Describe "<name_of_function1> PS$PSVersion Integrations tests" {
 . `$PSScriptRoot"/ErrorHandler.ps1"
 
 $logingNotes
+# See the black listed variables file to see what variables to not reassign variables:
+#  $ModuleName\$blackListedFileName
 
 function Program {
   #[CmdletBinding()]
@@ -252,6 +258,9 @@ Invoke-$ModuleName -ErrorAction Stop
 "@
 
       $runMainFile > "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1"
+
+      $blackListedFileContent = Get-BlackListedVars
+      $blackListedFileContent > "$Path\$ModuleName\$blackListedFileName"
 
       $logHelper = Get-LogCleaner
       $logWriter = Get-LogWriter
