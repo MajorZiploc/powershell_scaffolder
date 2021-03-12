@@ -92,13 +92,9 @@ function Invoke-$ScriptName {
     $logCleanupStep
   }
 }
-
 $errorHelper
-
 $logHelper
-
 $logWriter
-
 Invoke-$ScriptName -ErrorAction Stop
 
 "@
