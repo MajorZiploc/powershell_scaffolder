@@ -208,8 +208,9 @@ New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
 #   For non structured data:
 #      Write-Log -msg `$msg -logFile "`$logFile"
 #   For structed data (hash maps or powershell custom objects): 
-#      Write-Json -jsonLike `$data -logFile "`$logFile" -shouldCompressJson `$appConfig.shouldCompressJson
+#      Write-Json -jsonLike `$data -logFile "`$logFile"
 `$logFile = "`$logFolder/`$logDate/`$(`$appConfig.logFileName)_`$(`$logTime)_log.txt"
+`$summaryFile = "`$logFolder/`$logDate/summary/`$(`$appConfig.logFileName)_log.txt"
 
 
 function Invoke-$ModuleName {
@@ -227,7 +228,7 @@ function Invoke-$ModuleName {
     `$errorDetails = Get-ErrorDetails -error `$_
     `$msg = "Top level issue:``n"
     Write-Log -msg `$msg -logFile "`$logFile"
-    Write-Json -jsonLike `$errorDetails -logFile "`$logFile" -shouldCompressJson `$appConfig.shouldCompressJson
+    Write-Json -jsonLike `$errorDetails -logFile "`$logFile"
     throw `$_
   }
 
@@ -256,7 +257,7 @@ Invoke-$ModuleName -ErrorAction Stop
       $errorHandler = Get-ErrorHelperContent
       $errorHandler > "$Path\$ModuleName\Private\ErrorHandler.ps1"
 
-      $appJson = "{`"logFileName`": `"$($ModuleName)`", `"keepLogsForNDays`": 14, `"preview`": true, `"shouldCompressJson`": false}"
+      $appJson = "{`"logFileName`": `"$($ModuleName)`", `"keepLogsForNDays`": 14, `"preview`": true}"
       $lastStateJson = "{`"state`": `"Any state from the last run of this program (or last update of this file) that is required for this run.`"}" 
       $privateConfigJson = "{`"password`": `"not_put_in_git`"}"
 

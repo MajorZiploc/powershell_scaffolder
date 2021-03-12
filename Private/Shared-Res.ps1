@@ -74,12 +74,17 @@ function Write-Log {
       [string]
       `$msg
       ,
-      [Parameter(Mandatory=`$true)]
+      [Parameter(Mandatory=`$false)]
       [string]
       `$logFile
+      ,
+      [Parameter(Mandatory=`$false)]
+      [string]
+      `$summaryFile
   )
 
   `$msg | Out-File -FilePath "`$logFile" -Encoding utf8 -Append
+  `$msg | Out-File -FilePath "`$summaryFile" -Encoding utf8 -Append
 }
 
 function Write-Json {
@@ -88,17 +93,19 @@ function Write-Json {
       [Parameter(Mandatory=`$true)]
       `$jsonLike
       ,
-      [Parameter(Mandatory=`$true)]
+      [Parameter(Mandatory=`$false)]
       [string]
       `$logFile
       ,
-      [Parameter(Mandatory=`$true)]
-      [boolean]
-      `$shouldCompressJson
+      [Parameter(Mandatory=`$false)]
+      [string]
+      `$summaryFile
   )
 
-  `$json = if (`$shouldCompressJson) { `$jsonLike | ConvertTo-Json -Compress } else { `$jsonLike | ConvertTo-Json }
+  `$jsonc = `$jsonLike | ConvertTo-Json -Compress
+  `$json =  `$jsonLike | ConvertTo-Json 
   Write-Log -msg "`$json" -logFile "`$logFile"
+  Write-Log -msg "`$jsonc" -logFile "`$summaryFile"
 }
 
 "@
