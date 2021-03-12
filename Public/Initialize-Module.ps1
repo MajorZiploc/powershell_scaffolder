@@ -156,10 +156,14 @@ Describe "<name_of_function1> PS$PSVersion Integrations tests" {
 
       $unitTestString > "$Path\$ModuleName\Tests\$ModuleName.Tests.ps1"
 
+      $logingNotes = Get-LoggingNotes
+
       $mainFile = @"
 # Imports from same directory as this file
 . `$PSScriptRoot"/LogHelper.ps1"
 . `$PSScriptRoot"/ErrorHandler.ps1"
+
+$logingNotes
 
 function Program {
   #[CmdletBinding()]
@@ -175,7 +179,6 @@ function Program {
 
       $mainFile > "$Path\$ModuleName\Private\Program.ps1"
 
-      $logingNotes = Get-LoggingNotes
       $startTimeInfo = Get-StartTimeInfo
 
       $runMainFile = @"
@@ -183,7 +186,6 @@ function Program {
 # If you intend to use this as a powershell project, then edit the program file in the private directory
 # Makes powershell stricter by default to make code safer and more reliable
 
-$logingNotes
 Set-StrictMode -Version 3
 
 # Import statements (follows the bash style dot sourcing notation)
