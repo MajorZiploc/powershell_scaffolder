@@ -43,7 +43,7 @@ function Invoke-Scaffold {
 `$logFolder = "`$PSScriptRoot/logs/`$thisScriptName"
 "@
 
-      $logCleanupStep = @"
+        $logCleanupStep = @"
     # Clean up old logs
     Clean-Logs -keepLogsForNDays `$keepLogsForNDays -logFolder "`$logFolder"
 "@
