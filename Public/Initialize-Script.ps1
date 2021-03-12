@@ -46,7 +46,7 @@ function Invoke-Scaffold {
 "@
 
         $logCleanupStep = @"
-    # Clean up old logs
+# Clean up old logs
     Clean-Logs -keepLogsForNDays `$keepLogsForNDays -logFolder "`$logFolder"
 "@
       }
