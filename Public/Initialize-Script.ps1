@@ -38,7 +38,7 @@ function Invoke-Scaffold {
 `$logFolder = "`$PSScriptRoot/logs"
 # Create log directory if it does not exist, does not destroy the folder if it exists already
 New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
-`$logFile = "`$logFolder/`$logFileName/`$(`$logFileName)_`$(`$logDate)_log.txt"
+`$logFile = "`$logFolder/$ScriptName/`$logFileName/`$(`$logFileName)_`$(`$logDate)_log.txt"
 `$keepLogsForNDays = 14
 "@
         $logCleanupStep = @"
