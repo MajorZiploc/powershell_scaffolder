@@ -31,7 +31,7 @@ function Invoke-Scaffold {
       $errorHelper = Get-ErrorHelperContent
       $logWriter = Get-LogWriter
       $logFolder = @"
-`$logFolder = "`$PSScriptRoot/logs/`$thisScriptName"
+`$logFolder = "./logs/`$thisScriptName"
 "@
       $logHelper = Get-LogHelperContent
       $logCleanupStep = @"
@@ -49,21 +49,24 @@ Set-StrictMode -Version 1
 
 # The log file. Where to perform logging. Write(append) to it like so:
 #   For non structured data:
-#      Write-Log -msg `$msg -logFile "`$logFile"
+#      Write-Log -msg `$msg -logPath "`$logFile"
 #   For structed data (hash maps or powershell custom objects): 
-#      Write-Json -jsonLike `$data -logFile "`$logFile"
+#      Write-Json -jsonLike `$data -logPath "`$logFile"
 
 `$startTime = Get-Date
 `$preview = `$true
 `$logDate = `$startTime.ToString("yyyy-MM-dd") 
 `$logTime = `$startTime.ToString("HH-mm-ss")
 `$logFileName = `"$ScriptName`"
-$logFolder
+`$summaryFolderName = "summary"
+`$runFolderName = "per_run"
 `$thisScriptName = `$MyInvocation.MyCommand.Name -replace ".ps1", ""
+$logFolder
 # Create log directory if it does not exist, does not destroy the folder if it exists already
-New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
-`$logFile = "`$logFolder/`$logDate/`$(`$logFileName)_`$(`$logTime)_log.txt"
-`$summaryFile = "`$logFolder/`$logDate/summary/`$(`$logFileName)_log.txt"
+New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$runFolderName" | Out-Null
+New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$summaryFolderName" | Out-Null
+`$logFile = "`$logFolder/`$logDate/`$runFolderName/`$(`$logFileName)_`$(`$logTime)_log.txt"
+`$summaryFile = "`$logFolder/`$logDate/`$summaryFolderName/`$(`$logFileName)_log.txt"
 `$keepLogsForNDays = 14
 
 function Program {
@@ -74,7 +77,7 @@ function Invoke-$ScriptName {
   [CmdletBinding()]
   param ()
   `$msg = "Starting process. `$(Get-Date)"
-  Write-Log -msg `$msg -logFile "`$logFile"
+  Write-Log -msg `$msg -logPath "`$logFile"
   try {
     Program -ErrorAction Stop
   }
@@ -82,14 +85,14 @@ function Invoke-$ScriptName {
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
     `$msg = "Top level issue:``n"
-    Write-Log -msg `$msg -logFile "`$logFile"
-    Write-Json -jsonLike `$errorDetails -logFile "`$logFile"
+    Write-Log -msg `$msg -logPath "`$logFile"
+    Write-Json -jsonLike `$errorDetails -logPath "`$logFile"
     throw `$_
   }
 
   finally {
     `$msg = "Finished process. `$(Get-Date)``n"
-    Write-Log -msg `$msg -logFile "`$logFile"
+    Write-Log -msg `$msg -logPath "`$logFile"
     $logCleanupStep
   }
 }

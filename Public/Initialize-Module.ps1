@@ -198,26 +198,28 @@ Set-StrictMode -Version 3
 
 `$thisScriptName = `$MyInvocation.MyCommand.Name -replace ".ps1", ""
 `$logFolder = "`$PSScriptRoot/../logs/`$thisScriptName"
-# Create log directory if it does not exist, does not destroy the folder if it exists already
-New-Item -ItemType Directory -Force -Path "`$logFolder" | Out-Null
-
 `$startTime = Get-Date
 `$logDate = `$startTime.ToString("yyyy-MM-dd") 
+# Create log directory if it does not exist, does not destroy the folder if it exists already
+New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate" | Out-Null
+New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$(`$appConfig.runFolderName" | Out-Null
+New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$(`$appConfig.summaryFolderName)" | Out-Null
+
 `$logTime = `$startTime.ToString("HH-mm-ss")
 # The log file. Where to perform logging. Write(append) to it like so:
 #   For non structured data:
-#      Write-Log -msg `$msg -logFile "`$logFile"
+#      Write-Log -msg `$msg -logPath "`$logFile"
 #   For structed data (hash maps or powershell custom objects): 
-#      Write-Json -jsonLike `$data -logFile "`$logFile"
-`$logFile = "`$logFolder/`$logDate/`$(`$appConfig.logFileName)_`$(`$logTime)_log.txt"
-`$summaryFile = "`$logFolder/`$logDate/summary/`$(`$appConfig.logFileName)_log.txt"
+#      Write-Json -jsonLike `$data -logPath "`$logFile"
+`$logFile = "`$logFolder/`$logDate/`$(`$appConfig.runFolderName)/`$(`$appConfig.logFileName)_`$(`$logTime)_log.txt"
+`$summaryFile = "`$logFolder/`$logDate/`$(`$appConfig.summaryFolderName)/`$(`$appConfig.logFileName)_log.txt"
 
 
 function Invoke-$ModuleName {
   [CmdletBinding()]
   param ()
   `$msg = "Starting process. `$(Get-Date)"
-  Write-Log -msg `$msg -logFile `$logFile
+  Write-Log -msg `$msg -logPath `$logFile
 
   try {
     # Program is where you should write your normal powershell script code
@@ -227,14 +229,14 @@ function Invoke-$ModuleName {
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
     `$msg = "Top level issue:``n"
-    Write-Log -msg `$msg -logFile "`$logFile"
-    Write-Json -jsonLike `$errorDetails -logFile "`$logFile"
+    Write-Log -msg `$msg -logPath "`$logFile"
+    Write-Json -jsonLike `$errorDetails -logPath "`$logFile"
     throw `$_
   }
 
   finally {
     `$msg = "Finished process. `$(Get-Date)``n"
-    Write-Log -msg `$msg -logFile "`$logFile"
+    Write-Log -msg `$msg -logPath "`$logFile"
     # Clean up old logs
     Clean-Logs -keepLogsForNDays `$appConfig.keepLogsForNDays -logFolder "`$logFolder"
     # update last state json
@@ -257,7 +259,7 @@ Invoke-$ModuleName -ErrorAction Stop
       $errorHandler = Get-ErrorHelperContent
       $errorHandler > "$Path\$ModuleName\Private\ErrorHandler.ps1"
 
-      $appJson = "{`"logFileName`": `"$($ModuleName)`", `"keepLogsForNDays`": 14, `"preview`": true}"
+      $appJson = "{`"logFileName`": `"$($ModuleName)`", `"keepLogsForNDays`": 14, `"preview`": true, `"summaryFolderName`": `"summary`", `"runFolderName`": `"per_run`"}"
       $lastStateJson = "{`"state`": `"Any state from the last run of this program (or last update of this file) that is required for this run.`"}" 
       $privateConfigJson = "{`"password`": `"not_put_in_git`"}"
 
