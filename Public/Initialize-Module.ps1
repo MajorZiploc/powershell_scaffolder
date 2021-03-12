@@ -235,7 +235,7 @@ function Invoke-$ModuleName {
     `$msg = "Finished process. `$(Get-Date)``n"
     Write-Log -msg `$msg -logFile "`$logFile"
     # Clean up old logs
-    Clean-Logs -logFileNamePrefix `$appConfig.logFileName -keepLogsForNDays `$appConfig.keepLogsForNDays -logFolder "`$logFolder"
+    Clean-Logs -keepLogsForNDays `$appConfig.keepLogsForNDays -logFolder "`$logFolder"
     # update last state json
     `$lastState | ConvertTo-Json > `$lastStateFilePath
   }

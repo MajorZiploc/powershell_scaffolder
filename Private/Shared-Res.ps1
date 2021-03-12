@@ -7,10 +7,6 @@ function Clean-Logs {
   [CmdletBinding()]
   param(
     [Parameter(Mandatory = `$true)]
-    [string]
-    `$logFileNamePrefix
-    ,
-    [Parameter(Mandatory = `$true)]
     [ValidateRange(0, [int]::MaxValue)]
     [int]
     `$keepLogsForNDays
@@ -20,17 +16,15 @@ function Clean-Logs {
     `$logFolder
   )
 
-  [array]`$logs = Get-ChildItem -Path "`$logFolder" | Where-Object {`$_.Name -imatch "`$(`$logFileNamePrefix)_(\S+)?_log\.txt"}
-  `$logs | ForEach-Object {
-    `$r = (`$_.Name | Select-String -Pattern "`$(`$logFileNamePrefix)_(\S+)?_log\.txt");
-    `$match = `$r.Matches.Groups[1].Value;
-    [datetime]`$logDate = `$match
+  [array]`$logDates = Get-ChildItem -Path "`$logFolder"
+  `$logDates | ForEach-Object {
+    [datetime]`$logDate = `$_
     `$now = Get-Date
     `$timespan = `$now - `$logDate
     `$daysOld = `$timespan.Days
     if (`$daysOld -gt `$keepLogsForNDays) {
-      # delete the log file
-      Remove-Item -Path `$_.FullName
+      # delete the log date folder
+      Remove-Item -Path `$_.FullName -Recurse
     }
   }
 }
