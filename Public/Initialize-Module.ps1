@@ -215,7 +215,10 @@ function Invoke-$ModuleName {
   [CmdletBinding()]
   param ()
   `$msg = "Starting process. `$(Get-Date)"
+  `$msg += "environment: `$environ"
+  `$msg += "appConfig:"
   Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
+  Write-Json -jsonLike `$appConfig -logPath "`$logFile" -summaryPath "`$summaryFile"
 
   try {
     # Program is where you should write your normal powershell script code
