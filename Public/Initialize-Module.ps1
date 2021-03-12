@@ -214,8 +214,8 @@ New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$(`$appConfig.
 function Invoke-$ModuleName {
   [CmdletBinding()]
   param ()
-  `$msg = "Starting process. `$(Get-Date)"
-  `$msg += "environment: `$environ"
+  `$msg = "Starting process. `$(Get-Date)``n"
+  `$msg += "environment: `$environ``n"
   `$msg += "appConfig:"
   Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
   Write-Json -jsonLike `$appConfig -logPath "`$logFile" -summaryPath "`$summaryFile"
@@ -260,22 +260,21 @@ Invoke-$ModuleName -ErrorAction Stop
 
       $appJson = @"
 {
-    "logFileName": "$($ModuleName)",
-    "keepLogsForNDays": 14,
-    "preview": true,
-    "summaryFolderName": "summary",
-    "runFolderName": "per_run"
+  "preview": true,
+  "keepLogsForNDays": 14,
+  "logFileName": "$($ModuleName)",
+  "summaryFolderName": "summary",
+  "runFolderName": "per_run"
 }
 "@
       $lastStateJson = @"
 {
-    "state":
-    "Any state from the last run of this program (or last update of this file) that is required for this run."}
+  "state": "Any state from the last run of this program (or last update of this file) that is required for this run."
+}
 "@
       $privateConfigJson = @"
 {
-    "password":
-    "not_put_in_git"
+  "password": "not_put_in_git"
 }
 "@
 
