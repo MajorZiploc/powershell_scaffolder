@@ -175,9 +175,17 @@ function Program {
       $mainFile > "$Path\$ModuleName\Private\Program.ps1"
 
       $runMainFile = @"
-# Only edit this file if you intend to write a powershell module or need to use secrets
+# Only edit this file if you intend to write a powershell module or need to use secrets or change the environment
 # If you intend to use this as a powershell project, then edit the program file in the private directory
 # Makes powershell stricter by default to make code safer and more reliable
+
+# NOTE ON LOGGING:
+# Write(append) to the log files like so:
+#  logPath and summaryPath are optional. They default to the variables `$logFile and `$summaryFile
+#   For non structured data:
+#      Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
+#   For structured data (hash maps or powershell custom objects): 
+#      Write-Json -jsonLike `$data -logPath "`$logFile" -summaryPath "`$summaryFile"
 Set-StrictMode -Version 3
 
 # Import statements (follows the bash style dot sourcing notation)
@@ -201,25 +209,18 @@ Set-StrictMode -Version 3
 `$startTime = Get-Date
 `$logDate = `$startTime.ToString("yyyy-MM-dd") 
 # Create log directory if it does not exist, does not destroy the folder if it exists already
-New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate" | Out-Null
-New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$(`$appConfig.runFolderName" | Out-Null
+New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$(`$appConfig.runFolderName)" | Out-Null
 New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$(`$appConfig.summaryFolderName)" | Out-Null
 
 `$logTime = `$startTime.ToString("HH-mm-ss")
-# The log file. Where to perform logging. Write(append) to it like so:
-#   For non structured data:
-#      Write-Log -msg `$msg -logPath "`$logFile"
-#   For structed data (hash maps or powershell custom objects): 
-#      Write-Json -jsonLike `$data -logPath "`$logFile"
 `$logFile = "`$logFolder/`$logDate/`$(`$appConfig.runFolderName)/`$(`$appConfig.logFileName)_`$(`$logTime)_log.txt"
 `$summaryFile = "`$logFolder/`$logDate/`$(`$appConfig.summaryFolderName)/`$(`$appConfig.logFileName)_log.txt"
-
 
 function Invoke-$ModuleName {
   [CmdletBinding()]
   param ()
   `$msg = "Starting process. `$(Get-Date)"
-  Write-Log -msg `$msg -logPath `$logFile
+  Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
 
   try {
     # Program is where you should write your normal powershell script code
@@ -228,15 +229,15 @@ function Invoke-$ModuleName {
 
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
-    `$msg = "Top level issue:``n"
-    Write-Log -msg `$msg -logPath "`$logFile"
-    Write-Json -jsonLike `$errorDetails -logPath "`$logFile"
+    `$msg = "Top level issue:"
+    Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
+    Write-Json -jsonLike `$errorDetails -logPath "`$logFile" -summaryPath "`$summaryFile"
     throw `$_
   }
 
   finally {
     `$msg = "Finished process. `$(Get-Date)``n"
-    Write-Log -msg `$msg -logPath "`$logFile"
+    Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
     # Clean up old logs
     Clean-Logs -keepLogsForNDays `$appConfig.keepLogsForNDays -logFolder "`$logFolder"
     # update last state json

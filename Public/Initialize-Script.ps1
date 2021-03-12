@@ -45,13 +45,15 @@ function Invoke-Scaffold {
       }
 
       $mainFile = @"
-Set-StrictMode -Version 1
-
-# The log file. Where to perform logging. Write(append) to it like so:
+# NOTE ON LOGGING:
+# Write(append) to the log files like so:
+#  logPath and summaryPath are optional. They default to the variables `$logFile and `$summaryFile
 #   For non structured data:
-#      Write-Log -msg `$msg -logPath "`$logFile"
-#   For structed data (hash maps or powershell custom objects): 
-#      Write-Json -jsonLike `$data -logPath "`$logFile"
+#      Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
+#   For structured data (hash maps or powershell custom objects): 
+#      Write-Json -jsonLike `$data -logPath "`$logFile" -summaryPath "`$summaryFile"
+
+Set-StrictMode -Version 1
 
 `$startTime = Get-Date
 `$preview = `$true
@@ -77,7 +79,7 @@ function Invoke-$ScriptName {
   [CmdletBinding()]
   param ()
   `$msg = "Starting process. `$(Get-Date)"
-  Write-Log -msg `$msg -logPath "`$logFile"
+  Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
   try {
     Program -ErrorAction Stop
   }
@@ -85,14 +87,14 @@ function Invoke-$ScriptName {
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
     `$msg = "Top level issue:``n"
-    Write-Log -msg `$msg -logPath "`$logFile"
-    Write-Json -jsonLike `$errorDetails -logPath "`$logFile"
+    Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
+    Write-Json -jsonLike `$errorDetails -logPath "`$logFile" -summaryPath "`$summaryFile"
     throw `$_
   }
 
   finally {
     `$msg = "Finished process. `$(Get-Date)``n"
-    Write-Log -msg `$msg -logPath "`$logFile"
+    Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
     $logCleanupStep
   }
 }
