@@ -29,6 +29,7 @@ function Invoke-Scaffold {
       New-Item "$scriptFilePath" -ItemType File
 
       $errorHelper = Get-ErrorHelperContent
+      $startTimeInfo = Get-StartTimeInfo
       $logWriter = Get-LogWriter
       $logFolder = @"
 `$logFolder = "./logs/`$thisScriptName"
@@ -54,10 +55,8 @@ function Invoke-Scaffold {
 $logingNotes
 Set-StrictMode -Version 1
 
-`$startTime = Get-Date
 `$preview = `$true
-`$logDate = `$startTime.ToString("yyyy-MM-dd") 
-`$logTime = `$startTime.ToString("HH-mm-ss")
+$startTimeInfo
 `$logFileName = `"$ScriptName`"
 `$summaryFolderName = "summary"
 `$runFolderName = "per_run"

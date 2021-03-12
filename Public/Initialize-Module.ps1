@@ -175,6 +175,7 @@ function Program {
       $mainFile > "$Path\$ModuleName\Private\Program.ps1"
 
       $logingNotes = Get-LoggingNotes
+      $startTimeInfo = Get-StartTimeInfo
 
       $runMainFile = @"
 # Only edit this file if you intend to write a powershell module or need to use secrets or change the environment
@@ -202,13 +203,11 @@ Set-StrictMode -Version 3
 
 `$thisScriptName = `$MyInvocation.MyCommand.Name -replace ".ps1", ""
 `$logFolder = "`$PSScriptRoot/../logs/`$thisScriptName"
-`$startTime = Get-Date
-`$logDate = `$startTime.ToString("yyyy-MM-dd") 
+$startTimeInfo
 # Create log directory if it does not exist, does not destroy the folder if it exists already
 New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$(`$appConfig.runFolderName)" | Out-Null
 New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$(`$appConfig.summaryFolderName)" | Out-Null
 
-`$logTime = `$startTime.ToString("HH-mm-ss")
 `$logFile = "`$logFolder/`$logDate/`$(`$appConfig.runFolderName)/`$(`$appConfig.logFileName)_`$(`$logTime)_log.txt"
 `$summaryFile = "`$logFolder/`$logDate/`$(`$appConfig.summaryFolderName)/`$(`$appConfig.logFileName)_log.txt"
 

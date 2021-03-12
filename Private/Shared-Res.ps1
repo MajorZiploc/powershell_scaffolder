@@ -146,3 +146,14 @@ function Get-LoggingNotes {
   return $logingNotes
 }
 
+function Get-StartTimeInfo {
+  [CmdletBinding()]
+  param ()
+
+  $startTimeInfo = @"
+`$startTime = Get-Date
+`$logDate = `$startTime.ToString("yyyy-MM-dd") 
+`$logTime = `$startTime.ToString("HH-mm-ss")
+"@
+  return $startTimeInfo
+}
