@@ -163,10 +163,6 @@ Describe "<name_of_function1> PS$PSVersion Integrations tests" {
       $logingNotes = Get-LoggingNotes
 
       $mainFile = @"
-# Imports from same directory as this file
-. `$PSScriptRoot"/LogHelper.ps1"
-. `$PSScriptRoot"/ErrorHandler.ps1"
-
 $logingNotes
 # See the black listed variables file to see what variables to not reassign:
 #  $ModuleName/$blackListedFileName
@@ -179,7 +175,12 @@ function Program {
     # [int]
     # `$n = 0
   #)
-  # return `$n
+
+  # Imports files from same directory as this file
+  . `$PSScriptRoot"/LogHelper.ps1"
+  . `$PSScriptRoot"/ErrorHandler.ps1"
+
+  return 0
 }
 "@
 
@@ -190,18 +191,18 @@ function Program {
       $runMainFile = @"
 # Only edit this file if you intend to write a powershell module or need to use secrets or change the environment
 # If you intend to use this as a powershell project, then edit the program file in the private directory
-# Makes powershell stricter by default to make code safer and more reliable
-
-Set-StrictMode -Version 3
-
-# Import statements (follows the bash style dot sourcing notation)
-. `$PSScriptRoot"/../Private/Program.ps1"
-. `$PSScriptRoot"/../Private/ErrorHandler.ps1"
-. `$PSScriptRoot"/../Private/LogHelper.ps1"
 
 function Invoke-$ModuleName {
   [CmdletBinding()]
   param ()
+
+  # Makes powershell stricter by default to make code safer and more reliable
+  Set-StrictMode -Version 3
+
+  # Import statements (follows the bash style dot sourcing notation)
+  . `$PSScriptRoot"/../Private/Program.ps1"
+  . `$PSScriptRoot"/../Private/ErrorHandler.ps1"
+  . `$PSScriptRoot"/../Private/LogHelper.ps1"
 
   # The environment to use. Determines the app config and state objects to use
   New-Variable -Name environ -Value `$("test") -Option ReadOnly -Force
