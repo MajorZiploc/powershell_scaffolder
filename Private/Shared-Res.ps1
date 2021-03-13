@@ -137,10 +137,9 @@ function Get-LoggingNotes {
 # NOTE ON LOGGING: THESE HELPER LOGGING FUNCTIONS ARE REQUIRED TO BE USED.
 # Write(append) to the log files like so:
 #   For non structured data:
-#      Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
+#      Write-Log -msg `$msg
 #   For structured data (hash maps or powershell custom objects): 
-#      Write-Json -jsonLike `$data -logPath "`$logFile" -summaryPath "`$summaryFile"
-#   note: logPath and summaryPath are optional. They default to the variables `$logFile and `$summaryFile
+#      Write-Json -jsonLike `$data
 #   note: when using the `$msg variable to store your message. Make sure to clear out the variable like so:
 #        `$msg = ""
 # Why do I have to use these for logging?

@@ -226,8 +226,8 @@ function Invoke-$ModuleName {
   `$msg = "Starting process. `$(Get-Date)``n"
   `$msg += "environment: `$environ``n"
   `$msg += "appConfig:"
-  Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
-  Write-Json -jsonLike `$appConfig -logPath "`$logFile" -summaryPath "`$summaryFile"
+  Write-Log -msg `$msg
+  Write-Json -jsonLike `$appConfig
 
   try {
     # Program is where you should write your normal powershell script code
@@ -237,14 +237,14 @@ function Invoke-$ModuleName {
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
     `$msg = "Top level issue:"
-    Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
-    Write-Json -jsonLike `$errorDetails -logPath "`$logFile" -summaryPath "`$summaryFile"
+    Write-Log -msg `$msg
+    Write-Json -jsonLike `$errorDetails
     throw `$_
   }
 
   finally {
     `$msg = "Finished process. `$(Get-Date)``n"
-    Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
+    Write-Log -msg `$msg
     # Clean up old logs
     Clean-Logs -keepLogsForNDays `$appConfig.keepLogsForNDays -logFolder "`$logFolder"
     # update last state json
