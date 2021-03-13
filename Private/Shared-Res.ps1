@@ -19,9 +19,9 @@ function Clean-Logs {
   `$logDir = if ([string]::IsNullOrWhiteSpace(`$logDir)) { `$logFolder } else { `$logDir }
   [array]`$logDates = Get-ChildItem -Path "`$logFolder"
   `$logDates | ForEach-Object {
-    [datetime]`$logDate = `$_.Name
+    [datetime]`$lDate = `$_.Name
     `$now = Get-Date
-    `$timespan = `$now - `$logDate
+    `$timespan = `$now - `$lDate
     `$daysOld = `$timespan.Days
     if (`$daysOld -gt `$keepLogFilesForNDays) {
       # delete the log date folder
