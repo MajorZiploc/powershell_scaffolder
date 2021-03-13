@@ -45,10 +45,7 @@ New-Variable -Name logFolder -Value `$("./logs/`$thisScriptName") -Option ReadOn
 New-Variable -Name logFolder -Value `$("`$PSScriptRoot/logs/`$thisScriptName") -Option ReadOnly,AllScope -Force
 "@
 
-        $logCleanupStep = @"
-# Clean up old logs
-    Clean-Logs -keepLogFilesForNDays `$keepLogsForNDays
-"@
+        $logCleanupStep = Get-LogCleanupStep
       }
 
       $mainFile = @"

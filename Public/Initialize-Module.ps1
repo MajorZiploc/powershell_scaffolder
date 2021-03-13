@@ -190,6 +190,8 @@ function Program {
 
       $startTimeInfo = Get-StartTimeInfo
 
+      $logCleanupStep = Get-LogCleanupStep
+
       $runMainFile = @"
 # Only edit this file if you intend to write a powershell module or need to use secrets or change the environment
 # If you intend to use this as a powershell project, then edit the program file in the private directory
@@ -249,8 +251,7 @@ function Invoke-$ModuleName {
   finally {
     `$msg = "Finished process. `$(Get-Date)``n"
     Write-Log -msg `$msg
-    # Clean up old logs
-    Clean-Logs -keepLogFilesForNDays `$appConfig.keepLogsForNDays
+    $logCleanupStep
     # update last state json
     `$lastState | ConvertTo-Json > `$lastStateFilePath
   }

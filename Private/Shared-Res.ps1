@@ -199,3 +199,15 @@ Why are these variables written to with force and are read-only? Why not use con
 "@
   return $blackListedVars
 }
+
+
+function Get-LogCleanupStep {
+  [CmdletBinding()]
+  param ()
+
+  $logCleanupStep = @"
+# Clean up old logs
+    Clean-Logs -keepLogFilesForNDays `$keepLogsForNDays
+"@
+  return $logCleanupStep
+}
