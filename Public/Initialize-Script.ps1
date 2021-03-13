@@ -77,7 +77,7 @@ function Invoke-$ScriptName {
   [CmdletBinding()]
   param ()
   `$msg = "Starting process. `$(Get-Date)"
-  Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
+  Write-Log -msg `$msg
   try {
     Program -ErrorAction Stop
   }
@@ -85,14 +85,14 @@ function Invoke-$ScriptName {
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
     `$msg = "Top level issue:``n"
-    Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
-    Write-Json -jsonLike `$errorDetails -logPath "`$logFile" -summaryPath "`$summaryFile"
+    Write-Log -msg `$msg
+    Write-Json -jsonLike `$errorDetails
     throw `$_
   }
 
   finally {
     `$msg = "Finished process. `$(Get-Date)``n"
-    Write-Log -msg `$msg -logPath "`$logFile" -summaryPath "`$summaryFile"
+    Write-Log -msg `$msg
     $logCleanupStep
   }
 }
