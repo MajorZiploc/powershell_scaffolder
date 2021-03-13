@@ -47,7 +47,7 @@ New-Variable -Name logFolder -Value `$("`$PSScriptRoot/logs/`$thisScriptName") -
 
         $logCleanupStep = @"
 # Clean up old logs
-    Clean-Logs -keepLogsForNDays `$keepLogsForNDays
+    Clean-Logs -keepLogFilesForNDays `$keepLogsForNDays
 "@
       }
 

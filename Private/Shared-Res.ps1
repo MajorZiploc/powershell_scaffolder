@@ -9,7 +9,7 @@ function Clean-Logs {
     [Parameter(Mandatory = `$true)]
     [ValidateRange(0, [int]::MaxValue)]
     [int]
-    `$keepLogsForNDays
+    `$keepLogFilesForNDays
     ,
     [Parameter(Mandatory = `$false)]
     [string]
@@ -23,7 +23,7 @@ function Clean-Logs {
     `$now = Get-Date
     `$timespan = `$now - `$logDate
     `$daysOld = `$timespan.Days
-    if (`$daysOld -gt `$keepLogsForNDays) {
+    if (`$daysOld -gt `$keepLogFilesForNDays) {
       # delete the log date folder
       Remove-Item -Path `$_.FullName -Recurse
     }
