@@ -83,7 +83,7 @@ function Invoke-$ScriptName {
     `$errorDetails = Get-ErrorDetails -error `$_
     `$msg = "Top level issue:``n"
     Write-Log -msg `$msg
-    Write-Json -jsonLike `$errorDetails
+    Write-Json -data `$errorDetails
     throw `$_
   }
 

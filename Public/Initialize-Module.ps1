@@ -234,7 +234,7 @@ function Invoke-$ModuleName {
   `$msg += "environment: `$environ``n"
   `$msg += "appConfig:"
   Write-Log -msg `$msg
-  Write-Json -jsonLike `$appConfig
+  Write-Json -data `$appConfig
 
   try {
     # Program is where you should write your normal powershell script code
@@ -245,7 +245,7 @@ function Invoke-$ModuleName {
     `$errorDetails = Get-ErrorDetails -error `$_
     `$msg = "Top level issue:"
     Write-Log -msg `$msg
-    Write-Json -jsonLike `$errorDetails
+    Write-Json -data `$errorDetails
     throw `$_
   }
 
