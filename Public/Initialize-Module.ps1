@@ -228,6 +228,7 @@ function Invoke-$ModuleName {
 
   New-Variable -Name logFile -Value `$("`$logFolder/`$logDate/`$(`$appConfig.runFolderName)/`$(`$appConfig.logFileName)_`$(`$logTime)_log.txt") -Option ReadOnly,AllScope -Force
   New-Variable -Name summaryFile -Value `$("`$logFolder/`$logDate/`$(`$appConfig.summaryFolderName)/`$(`$appConfig.logFileName)_log.txt") -Option ReadOnly,AllScope -Force
+  New-Variable -Name keepLogsForNDays -Value `$(`$appConfig.keepLogsForNDays) -Option ReadOnly,AllScope -Force
 
   `$msg = "Starting process. `$(Get-Date)``n"
   `$msg += "environment: `$environ``n"
