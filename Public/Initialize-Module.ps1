@@ -205,25 +205,25 @@ function Invoke-$ModuleName {
   . `$PSScriptRoot"/../Private/LogHelper.ps1"
 
   # The environment to use. Determines the app config and state objects to use
-  New-Variable -Name environ -Value `$("test") -Option ReadOnly -Force
-  New-Variable -Name settingsFolder -Value `$("`$PSScriptRoot\..\settings") -Option ReadOnly -Force
-  New-Variable -Name appConfig -Value `$(Get-Content -Path "`$settingsFolder\`$environ\appsettings.json" -Raw | ConvertFrom-Json) -Option ReadOnly -Force
+  New-Variable -Name environ -Value `$("test") -Option ReadOnly,AllScope -Force
+  New-Variable -Name settingsFolder -Value `$("`$PSScriptRoot\..\settings") -Option ReadOnly,AllScope -Force
+  New-Variable -Name appConfig -Value `$(Get-Content -Path "`$settingsFolder\`$environ\appsettings.json" -Raw | ConvertFrom-Json) -Option ReadOnly,AllScope -Force
   # Secrets object. Things that you do not want to put in git go inside this. Add to the secrets json in the private folder
   # Need to uncomment this line if you want to use secrets. You will likely need to create the file aswell.
-  # New-Variable -Name secrets -Value `$(`$PSScriptRoot"\..\$privateConfigEndPath") -Option ReadOnly -Force
+  # New-Variable -Name secrets -Value `$(`$PSScriptRoot"\..\$privateConfigEndPath") -Option ReadOnly,AllScope -Force
 
-  New-Variable -Name lastStateFilePath -Value `$("`$settingsFolder\`$environ\$lastStateEndPath") -Option ReadOnly -Force
-  New-Variable -Name lastState -Value `$(Get-Content -Path `$lastStateFilePath -Raw | ConvertFrom-Json) -Option ReadOnly -Force
+  New-Variable -Name lastStateFilePath -Value `$("`$settingsFolder\`$environ\$lastStateEndPath") -Option ReadOnly,AllScope -Force
+  New-Variable -Name lastState -Value `$(Get-Content -Path `$lastStateFilePath -Raw | ConvertFrom-Json) -Option ReadOnly,AllScope -Force
 
-  New-Variable -Name thisScriptName -Value `$(`$MyInvocation.MyCommand.Name -replace ".ps1", "") -Option ReadOnly -Force
-  New-Variable -Name logFolder -Value `$("`$PSScriptRoot/../logs/`$thisScriptName") -Option ReadOnly -Force
+  New-Variable -Name thisScriptName -Value `$(`$MyInvocation.MyCommand.Name -replace ".ps1", "") -Option ReadOnly,AllScope -Force
+  New-Variable -Name logFolder -Value `$("`$PSScriptRoot/../logs/`$thisScriptName") -Option ReadOnly,AllScope -Force
   $startTimeInfo
   # Create log directory if it does not exist, does not destroy the folder if it exists already
   New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$(`$appConfig.runFolderName)" | Out-Null
   New-Item -ItemType Directory -Force -Path "`$logFolder/`$logDate/`$(`$appConfig.summaryFolderName)" | Out-Null
 
-  New-Variable -Name logFile -Value `$("`$logFolder/`$logDate/`$(`$appConfig.runFolderName)/`$(`$appConfig.logFileName)_`$(`$logTime)_log.txt") -Option ReadOnly -Force
-  New-Variable -Name summaryFile -Value `$("`$logFolder/`$logDate/`$(`$appConfig.summaryFolderName)/`$(`$appConfig.logFileName)_log.txt") -Option ReadOnly -Force
+  New-Variable -Name logFile -Value `$("`$logFolder/`$logDate/`$(`$appConfig.runFolderName)/`$(`$appConfig.logFileName)_`$(`$logTime)_log.txt") -Option ReadOnly,AllScope -Force
+  New-Variable -Name summaryFile -Value `$("`$logFolder/`$logDate/`$(`$appConfig.summaryFolderName)/`$(`$appConfig.logFileName)_log.txt") -Option ReadOnly,AllScope -Force
 
   `$msg = "Starting process. `$(Get-Date)``n"
   `$msg += "environment: `$environ``n"
@@ -248,7 +248,7 @@ function Invoke-$ModuleName {
     `$msg = "Finished process. `$(Get-Date)``n"
     Write-Log -msg `$msg
     # Clean up old logs
-    Clean-Logs -keepLogsForNDays `$appConfig.keepLogsForNDays -logFolder "`$logFolder"
+    Clean-Logs -keepLogsForNDays `$appConfig.keepLogsForNDays
     # update last state json
     `$lastState | ConvertTo-Json > `$lastStateFilePath
   }

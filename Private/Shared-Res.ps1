@@ -11,11 +11,12 @@ function Clean-Logs {
     [int]
     `$keepLogsForNDays
     ,
-    [Parameter(Mandatory = `$true)]
+    [Parameter(Mandatory = `$false)]
     [string]
-    `$logFolder
+    `$logDir
   )
 
+  `$logDir = if ([string]::IsNullOrWhiteSpace(`$logDir)) { `$logFolder } else { `$logDir }
   [array]`$logDates = Get-ChildItem -Path "`$logFolder"
   `$logDates | ForEach-Object {
     [datetime]`$logDate = `$_.Name
@@ -157,9 +158,9 @@ function Get-StartTimeInfo {
   param ()
 
   $startTimeInfo = @"
-New-Variable -Name startTime -Value `$(Get-Date) -Option ReadOnly -Force
-New-Variable -Name logDate -Value `$(`$startTime.ToString("yyyy-MM-dd")) -Option ReadOnly -Force
-New-Variable -Name logTime -Value `$(`$startTime.ToString("HH-mm-ss")) -Option ReadOnly -Force
+New-Variable -Name startTime -Value `$(Get-Date) -Option ReadOnly,AllScope -Force
+New-Variable -Name logDate -Value `$(`$startTime.ToString("yyyy-MM-dd")) -Option ReadOnly,AllScope -Force
+New-Variable -Name logTime -Value `$(`$startTime.ToString("HH-mm-ss")) -Option ReadOnly,AllScope -Force
 "@
   return $startTimeInfo
 }
