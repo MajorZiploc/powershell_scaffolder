@@ -12,7 +12,7 @@
 RootModule = 'powershell_scaffolder.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0'
+ModuleVersion = '1.0.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -30,7 +30,7 @@ CompanyName = 'N/A'
 Copyright = '(c) 2020 Manyu Lakhotia. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Provides a function to scaffold a powershell project/module.'
+Description = 'Provides ways scaffold a powershell project, module, and script.'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '5.1'
