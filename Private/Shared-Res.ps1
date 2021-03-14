@@ -105,6 +105,10 @@ function Write-Log {
 function Write-Json {
   [CmdletBinding()]
   param (
+      [Parameter(Mandatory=`$false)]
+      [string]
+      `$label = ""
+      ,
       [Parameter(Mandatory=`$true)]
       `$data
       ,
@@ -119,11 +123,12 @@ function Write-Json {
 
   `$lf = if ([string]::IsNullOrWhiteSpace(`$logPath)) { `$logFile } else { `$logPath }
   `$sf = if ([string]::IsNullOrWhiteSpace(`$summaryPath)) { `$summaryFile } else { `$summaryPath }
+  `$label = if ([string]::IsNullOrWhiteSpace(`$label)) { "" } else { "`$label``n" }
 
   `$jsonc = `$data | Select-Object -Property * | ConvertTo-Json -Compress
   `$json =  `$data | Select-Object -Property * | ConvertTo-Json 
-  Write-Log -msg "`$jsonc" -logPath "`$summaryFile" -whereToLog "10"
-  Write-Log -msg "`$json" -logPath "`$summaryFile" -whereToLog "01"
+  Write-Log -msg "`$label`$jsonc" -logPath "`$summaryFile" -whereToLog "10"
+  Write-Log -msg "`$label`$json" -logPath "`$summaryFile" -whereToLog "01"
 }
 
 "@

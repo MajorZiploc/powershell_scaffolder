@@ -232,9 +232,8 @@ function Invoke-$ModuleName {
 
   `$msg = "Starting process. `$(Get-Date)``n"
   `$msg += "environment: `$environ``n"
-  `$msg += "appConfig:"
   Write-Log -msg `$msg
-  Write-Json -data `$appConfig
+  Write-Json -label "appConfig:" -data `$appConfig
 
   try {
     # Program is where you should write your normal powershell script code
@@ -243,9 +242,7 @@ function Invoke-$ModuleName {
 
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
-    `$msg = "Top level issue:"
-    Write-Log -msg `$msg
-    Write-Json -data `$errorDetails
+    Write-Json -label "Top level issue: " -data `$errorDetails
     throw `$_
   }
 
