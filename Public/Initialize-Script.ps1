@@ -45,10 +45,7 @@ New-Variable -Name logFolder -Value `$("./logs/`$thisScriptName") -Option ReadOn
 New-Variable -Name logFolder -Value `$("`$PSScriptRoot/logs/`$thisScriptName") -Option ReadOnly,AllScope -Force
 "@
 
-        $logCleanupStep = @"
-# Clean up old logs
-    Clean-Logs -keepLogFilesForNDays `$keepLogsForNDays
-"@
+        $logCleanupStep = Get-LogCleanupStep
       }
 
       $mainFile = @"
@@ -84,9 +81,7 @@ function Invoke-$ScriptName {
 
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
-    `$msg = "Top level issue:``n"
-    Write-Log -msg `$msg
-    Write-Json -jsonLike `$errorDetails
+    Write-Json -label "Top level issue: " -data `$errorDetails
     throw `$_
   }
 

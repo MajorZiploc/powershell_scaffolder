@@ -19,9 +19,9 @@ function Clean-Logs {
   `$logDir = if ([string]::IsNullOrWhiteSpace(`$logDir)) { `$logFolder } else { `$logDir }
   [array]`$logDates = Get-ChildItem -Path "`$logFolder"
   `$logDates | ForEach-Object {
-    [datetime]`$logDate = `$_.Name
+    [datetime]`$lDate = `$_.Name
     `$now = Get-Date
-    `$timespan = `$now - `$logDate
+    `$timespan = `$now - `$lDate
     `$daysOld = `$timespan.Days
     if (`$daysOld -gt `$keepLogFilesForNDays) {
       # delete the log date folder
@@ -105,8 +105,12 @@ function Write-Log {
 function Write-Json {
   [CmdletBinding()]
   param (
+      [Parameter(Mandatory=`$false)]
+      [string]
+      `$label = ""
+      ,
       [Parameter(Mandatory=`$true)]
-      `$jsonLike
+      `$data
       ,
       [Parameter(Mandatory=`$false)]
       [string]
@@ -119,11 +123,12 @@ function Write-Json {
 
   `$lf = if ([string]::IsNullOrWhiteSpace(`$logPath)) { `$logFile } else { `$logPath }
   `$sf = if ([string]::IsNullOrWhiteSpace(`$summaryPath)) { `$summaryFile } else { `$summaryPath }
+  `$label = if ([string]::IsNullOrWhiteSpace(`$label)) { "" } else { "`$label``n" }
 
-  `$jsonc = `$jsonLike | ConvertTo-Json -Compress
-  `$json =  `$jsonLike | ConvertTo-Json 
-  Write-Log -msg "`$jsonc" -logPath "`$summaryFile" -whereToLog "10"
-  Write-Log -msg "`$json" -logPath "`$summaryFile" -whereToLog "01"
+  `$jsonc = `$data | Select-Object -Property * | ConvertTo-Json -Compress
+  `$json =  `$data | Select-Object -Property * | ConvertTo-Json 
+  Write-Log -msg "`$label`$jsonc" -logPath "`$summaryFile" -whereToLog "10"
+  Write-Log -msg "`$label`$json" -logPath "`$summaryFile" -whereToLog "01"
 }
 
 "@
@@ -140,7 +145,7 @@ function Get-LoggingNotes {
 #   For non structured data:
 #      Write-Log -msg `$msg
 #   For structured data (hash maps or powershell custom objects): 
-#      Write-Json -jsonLike `$data
+#      Write-Json -data `$data
 #   note: when using the `$msg variable to store your message. Make sure to clear out the variable like so:
 #        `$msg = ""
 # Why do I have to use these for logging?
@@ -198,4 +203,16 @@ Why are these variables written to with force and are read-only? Why not use con
 
 "@
   return $blackListedVars
+}
+
+
+function Get-LogCleanupStep {
+  [CmdletBinding()]
+  param ()
+
+  $logCleanupStep = @"
+# Clean up old logs
+    Clean-Logs -keepLogFilesForNDays `$keepLogsForNDays
+"@
+  return $logCleanupStep
 }

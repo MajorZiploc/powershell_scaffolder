@@ -165,6 +165,8 @@ Describe "<name_of_function1> PS$PSVersion Integrations tests" {
       $mainFile = @"
 $logingNotes
 # See the black listed variables file to see what variables to not reassign:
+# By default, if you try and reassign a black listed variable, it will throw an error.
+#   It is possible to override the value with force, but it is highly recommended not to!
 #  $ModuleName/$blackListedFileName
 
 function Program {
@@ -187,6 +189,8 @@ function Program {
       $mainFile > "$Path\$ModuleName\Private\Program.ps1"
 
       $startTimeInfo = Get-StartTimeInfo
+
+      $logCleanupStep = Get-LogCleanupStep
 
       $runMainFile = @"
 # Only edit this file if you intend to write a powershell module or need to use secrets or change the environment
@@ -224,12 +228,12 @@ function Invoke-$ModuleName {
 
   New-Variable -Name logFile -Value `$("`$logFolder/`$logDate/`$(`$appConfig.runFolderName)/`$(`$appConfig.logFileName)_`$(`$logTime)_log.txt") -Option ReadOnly,AllScope -Force
   New-Variable -Name summaryFile -Value `$("`$logFolder/`$logDate/`$(`$appConfig.summaryFolderName)/`$(`$appConfig.logFileName)_log.txt") -Option ReadOnly,AllScope -Force
+  New-Variable -Name keepLogsForNDays -Value `$(`$appConfig.keepLogsForNDays) -Option ReadOnly,AllScope -Force
 
   `$msg = "Starting process. `$(Get-Date)``n"
   `$msg += "environment: `$environ``n"
-  `$msg += "appConfig:"
   Write-Log -msg `$msg
-  Write-Json -jsonLike `$appConfig
+  Write-Json -label "appConfig:" -data `$appConfig
 
   try {
     # Program is where you should write your normal powershell script code
@@ -238,17 +242,14 @@ function Invoke-$ModuleName {
 
   catch {
     `$errorDetails = Get-ErrorDetails -error `$_
-    `$msg = "Top level issue:"
-    Write-Log -msg `$msg
-    Write-Json -jsonLike `$errorDetails
+    Write-Json -label "Top level issue: " -data `$errorDetails
     throw `$_
   }
 
   finally {
     `$msg = "Finished process. `$(Get-Date)``n"
     Write-Log -msg `$msg
-    # Clean up old logs
-    Clean-Logs -keepLogFilesForNDays `$appConfig.keepLogsForNDays
+    $logCleanupStep
     # update last state json
     `$lastState | ConvertTo-Json > `$lastStateFilePath
   }
