@@ -13,10 +13,9 @@ function Clean-Logs {
     ,
     [Parameter(Mandatory = `$false)]
     [string]
-    `$logDir
+    `$logDir=`$logFolder
   )
 
-  `$logDir = if ([string]::IsNullOrWhiteSpace(`$logDir)) { `$logFolder } else { `$logDir }
   [array]`$logDates = Get-ChildItem -Path "`$logFolder"
   `$logDates | ForEach-Object {
     [datetime]`$lDate = `$_.Name
@@ -77,19 +76,17 @@ function Write-Log {
       ,
       [Parameter(Mandatory=`$false)]
       [string]
-      `$logPath
+      `$logPath=`$logFile
       ,
       [Parameter(Mandatory=`$false)]
       [string]
-      `$summaryPath
+      `$summaryPath=`$summaryFile
       ,
       [Parameter(Mandatory=`$false)]
       [string]
       `$whereToLog="11"
   )
 
-  `$lf = if ([string]::IsNullOrWhiteSpace(`$logPath)) { `$logFile } else { `$logPath }
-  `$sf = if ([string]::IsNullOrWhiteSpace(`$summaryPath)) { `$summaryFile } else { `$summaryPath }
   `$base = 2
   `$lAsInt = [convert]::ToInt32("10", `$base) # log file
   `$sAsInt = [convert]::ToInt32("01", `$base) # summary file
@@ -107,22 +104,20 @@ function Write-Json {
   param (
       [Parameter(Mandatory=`$false)]
       [string]
-      `$label = ""
+      `$label=""
       ,
       [Parameter(Mandatory=`$true)]
       `$data
       ,
       [Parameter(Mandatory=`$false)]
       [string]
-      `$logPath
+      `$logPath=`$logFile
       ,
       [Parameter(Mandatory=`$false)]
       [string]
-      `$summaryPath
+      `$summaryPath=`$summaryFile
   )
 
-  `$lf = if ([string]::IsNullOrWhiteSpace(`$logPath)) { `$logFile } else { `$logPath }
-  `$sf = if ([string]::IsNullOrWhiteSpace(`$summaryPath)) { `$summaryFile } else { `$summaryPath }
   `$label = if ([string]::IsNullOrWhiteSpace(`$label)) { "" } else { "`$label``n" }
 
   `$jsonc = `$data | Select-Object -Property * | ConvertTo-Json -Compress
