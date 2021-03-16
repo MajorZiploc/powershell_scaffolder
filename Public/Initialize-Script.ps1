@@ -74,7 +74,7 @@ function Invoke-$ScriptName {
   [CmdletBinding()]
   param ()
   `$msg = "Starting process. `$(Get-Date)"
-  Write-Log -msg `$msg
+  Write-Txt -txt `$msg
   try {
     Program -ErrorAction Stop
   }
@@ -87,7 +87,7 @@ function Invoke-$ScriptName {
 
   finally {
     `$msg = "Finished process. `$(Get-Date)``n"
-    Write-Log -msg `$msg
+    Write-Txt -txt `$msg
     $logCleanupStep
   }
 }
