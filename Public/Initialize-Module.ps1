@@ -5,9 +5,9 @@ param (
   [Parameter(Mandatory = $false)]
   [string]
   $Path = (Read-Host -prompt "Root path where project should be scaffolded (./): "),
-  [Parameter(Mandatory = $true, HelpMessage = "May only be made up of numbers, letters, and some special characters. Regex that passes: ^[a-zA-Z]{1}[\w\d_-]+[a-zA-Z0-9]{1}$")]
+  [Parameter(Mandatory = $true, HelpMessage = "May only be made up of numbers, letters, and some special characters. Regex that passes: ^[a-zA-Z0-9]*[\w\d._-]*[a-zA-Z0-9]*$")]
   [string]
-  [ValidatePattern("^[a-zA-Z]{1}[\w\d_-]+[a-zA-Z0-9]{1}$")]
+  [ValidatePattern("^[a-zA-Z0-9]*[\w\d._-]*[a-zA-Z0-9]*$")]
   $ModuleName,
   [Parameter(Mandatory = $false)]
   [string]
