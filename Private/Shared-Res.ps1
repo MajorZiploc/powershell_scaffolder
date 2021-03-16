@@ -76,12 +76,12 @@ function Get-LogWriter {
   param ()
   $logWriter = @"
 
-function Write-Log {
+function Write-Txt {
   [CmdletBinding()]
   param (
       [Parameter(Mandatory=`$true)]
       [string]
-      `$msg
+      `$txt
       ,
       [Parameter(Mandatory=`$false)]
       [string]
@@ -101,10 +101,10 @@ function Write-Log {
   `$sAsInt = [convert]::ToInt32("01", `$base) # summary file
 
   if ((`$whereToLog -band `$lAsInt) -eq `$lAsInt) {
-    `$msg | Out-File -FilePath "`$logFile" -Encoding utf8 -Append
+    `$txt | Out-File -FilePath "`$logFile" -Encoding utf8 -Append
   }
   if ((`$whereToLog -band `$sAsInt) -eq `$sAsInt) {
-    `$msg | Out-File -FilePath "`$summaryFile" -Encoding utf8 -Append
+    `$txt | Out-File -FilePath "`$summaryFile" -Encoding utf8 -Append
   }
 }
 
@@ -131,8 +131,8 @@ function Write-Json {
 
   `$jsonc = `$data | Select-Object -Property * | ConvertTo-Json -Compress
   `$json =  `$data | Select-Object -Property * | ConvertTo-Json 
-  Write-Log -msg "`$label`$jsonc" -logPath "`$summaryFile" -whereToLog "10"
-  Write-Log -msg "`$label`$json" -logPath "`$summaryFile" -whereToLog "01"
+  Write-Txt -txt "`$label`$jsonc" -logPath "`$summaryFile" -whereToLog "10"
+  Write-Txt -txt "`$label`$json" -logPath "`$summaryFile" -whereToLog "01"
 }
 
 "@
@@ -147,7 +147,7 @@ function Get-LoggingNotes {
 # NOTE ON LOGGING: THESE HELPER LOGGING FUNCTIONS ARE REQUIRED TO BE USED.
 # Write(append) to the log files like so:
 #   For non structured data:
-#      Write-Log -msg `$msg
+#      Write-Txt -txt `$msg
 #   For structured data (hash maps or powershell custom objects): 
 #      Write-Json -data `$data
 #   note: when using the `$msg variable to store your message. Make sure to clear out the variable like so:

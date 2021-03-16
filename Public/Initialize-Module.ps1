@@ -232,7 +232,7 @@ function Invoke-$ModuleName {
 
   `$msg = "Starting process. `$(Get-Date)``n"
   `$msg += "environment: `$environ``n"
-  Write-Log -msg `$msg
+  Write-Txt -txt `$msg
   Write-Json -label "appConfig:" -data `$appConfig
 
   try {
@@ -248,7 +248,7 @@ function Invoke-$ModuleName {
 
   finally {
     `$msg = "Finished process. `$(Get-Date)``n"
-    Write-Log -msg `$msg
+    Write-Txt -txt `$msg
     $logCleanupStep
     # update last state json
     `$lastState | ConvertTo-Json > `$lastStateFilePath
