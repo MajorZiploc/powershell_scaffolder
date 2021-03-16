@@ -55,7 +55,7 @@ function Get-ErrorDetails {
     `$error
   )
 
-  return @{
+  return [pscustomobject]@{
     ScriptStackTrace = `$error.ScriptStackTrace
     StackTrace = `$error.Exception.StackTrace
     Message = `$error.Exception.Message
@@ -148,7 +148,7 @@ function Get-LoggingNotes {
 # Write(append) to the log files like so:
 #   For non structured data:
 #      Write-Txt -txt `$msg
-#   For structured data (hash maps or powershell custom objects): 
+#   For structured data (powershell custom objects): 
 #      Write-Json -data `$data
 #   note: when using the `$msg variable to store your message. Make sure to clear out the variable like so:
 #        `$msg = ""
