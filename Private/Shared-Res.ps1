@@ -20,11 +20,15 @@ function Clean-Logs {
     `$excludeList=@()
   )
 
+  `$logDates = `$null
   [array]`$logDates = Get-ChildItem -Path "`$logDir" -Exclude `$excludeList
+  `$now = Get-Date
   if (`$null -eq `$logDates -or `$logDates.Length -eq 0) { return }
   `$logDates | ForEach-Object {
+    `$lDate = `$null
+    `$timespan = `$null
+    `$daysOld = `$null
     [datetime]`$lDate = `$_.Name
-    `$now = Get-Date
     `$timespan = `$now - `$lDate
     `$daysOld = `$timespan.Days
     if (`$daysOld -gt `$keepLogFilesForNDays) {
