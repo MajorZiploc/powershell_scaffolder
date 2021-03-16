@@ -13,11 +13,15 @@ function Clean-Logs {
     ,
     [Parameter(Mandatory = `$false)]
     [string]
-    `$logDir
+    `$logDir=`$logFolder
+    ,
+    [Parameter(Mandatory = `$false)]
+    [array]
+    `$excludeList=@()
   )
 
-  `$logDir = if ([string]::IsNullOrWhiteSpace(`$logDir)) { `$logFolder } else { `$logDir }
-  [array]`$logDates = Get-ChildItem -Path "`$logFolder"
+  [array]`$logDates = Get-ChildItem -Path "`$logDir" -Exclude `$excludeList
+  if (`$null -eq `$logDates -or `$logDates.Length -eq 0) { return }
   `$logDates | ForEach-Object {
     [datetime]`$lDate = `$_.Name
     `$now = Get-Date
@@ -25,7 +29,7 @@ function Clean-Logs {
     `$daysOld = `$timespan.Days
     if (`$daysOld -gt `$keepLogFilesForNDays) {
       # delete the log date folder
-      Remove-Item -Path `$_.FullName -Recurse
+      Remove-Item -Path `$_.FullName -Recurse -Force
     }
   }
 }
@@ -77,19 +81,17 @@ function Write-Log {
       ,
       [Parameter(Mandatory=`$false)]
       [string]
-      `$logPath
+      `$logPath=`$logFile
       ,
       [Parameter(Mandatory=`$false)]
       [string]
-      `$summaryPath
+      `$summaryPath=`$summaryFile
       ,
       [Parameter(Mandatory=`$false)]
       [string]
       `$whereToLog="11"
   )
 
-  `$lf = if ([string]::IsNullOrWhiteSpace(`$logPath)) { `$logFile } else { `$logPath }
-  `$sf = if ([string]::IsNullOrWhiteSpace(`$summaryPath)) { `$summaryFile } else { `$summaryPath }
   `$base = 2
   `$lAsInt = [convert]::ToInt32("10", `$base) # log file
   `$sAsInt = [convert]::ToInt32("01", `$base) # summary file
@@ -107,22 +109,20 @@ function Write-Json {
   param (
       [Parameter(Mandatory=`$false)]
       [string]
-      `$label = ""
+      `$label=""
       ,
       [Parameter(Mandatory=`$true)]
       `$data
       ,
       [Parameter(Mandatory=`$false)]
       [string]
-      `$logPath
+      `$logPath=`$logFile
       ,
       [Parameter(Mandatory=`$false)]
       [string]
-      `$summaryPath
+      `$summaryPath=`$summaryFile
   )
 
-  `$lf = if ([string]::IsNullOrWhiteSpace(`$logPath)) { `$logFile } else { `$logPath }
-  `$sf = if ([string]::IsNullOrWhiteSpace(`$summaryPath)) { `$summaryFile } else { `$summaryPath }
   `$label = if ([string]::IsNullOrWhiteSpace(`$label)) { "" } else { "`$label``n" }
 
   `$jsonc = `$data | Select-Object -Property * | ConvertTo-Json -Compress
@@ -211,7 +211,7 @@ function Get-LogCleanupStep {
   param ()
 
   $logCleanupStep = @"
-# Clean up old logs
+# Delete old logs
     Clean-Logs -keepLogFilesForNDays `$keepLogsForNDays
 "@
   return $logCleanupStep
