@@ -25,7 +25,6 @@ function Clean-Logs {
   `$now = Get-Date
   if (`$null -eq `$logDates -or `$logDates.Length -eq 0) { return }
   `$logDates | ForEach-Object {
-    `$lDate = `$null
     `$timespan = `$null
     `$daysOld = `$null
     [datetime]`$lDate = `$_.Name
