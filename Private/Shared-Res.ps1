@@ -110,9 +110,9 @@ function Write-Txt {
 function Write-Json {
   [CmdletBinding()]
   param (
-      [Parameter(Mandatory=`$false)]
+      [Parameter(Mandatory=`$true)]
       [string]
-      `$label=""
+      `$label
       ,
       [Parameter(Mandatory=`$true)]
       `$data
@@ -126,7 +126,7 @@ function Write-Json {
       `$summaryPath=`$summaryFile
   )
 
-  `$label = if ([string]::IsNullOrWhiteSpace(`$label)) { "" } else { "`$label``n" }
+  `$label = "`$label``n"
 
   `$jsonc = `$data | Select-Object -Property * | ConvertTo-Json -Compress
   `$json =  `$data | Select-Object -Property * | ConvertTo-Json 
@@ -144,13 +144,16 @@ function Get-LoggingNotes {
 
   $logingNotes = @"
 # NOTE ON LOGGING: THESE HELPER LOGGING FUNCTIONS ARE REQUIRED TO BE USED.
+# Write-Json is MUCH preferred over Write-Txt.
+# When parsing the logs for data on runs of this program,
+#   the json data gives us more control over the data.
 # Write(append) to the log files like so:
+#   For structured data (powershell custom objects): 
+#      Write-Json -label "Message that appears one line before the data" -data `$data
 #   For non structured data:
 #      Write-Txt -txt `$msg
-#   For structured data (powershell custom objects): 
-#      Write-Json -data `$data
-#   note: when using the `$msg variable to store your message. Make sure to clear out the variable like so:
-#        `$msg = ""
+#      note: when using the `$msg variable to store your message. Make sure to clear out the variable like so:
+#           `$msg = ""
 # Why do I have to use these for logging?
 # These helper functions use the utf-8 writing format which is required to parse the logs
 # Default writing format is utf-16 for powershell 5.1 and lower.
