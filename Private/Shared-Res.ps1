@@ -32,7 +32,7 @@ function Clean-Logs {
     `$daysOld = `$timespan.Days
     if (`$daysOld -gt `$keepLogFilesForNDays) {
       # delete the log date folder
-      Remove-Item -Path `$_.FullName -Recurse -Force
+      Remove-Item -Path `$_.FullName -Recurse
     }
   }
 }
