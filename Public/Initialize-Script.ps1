@@ -98,10 +98,10 @@ Invoke-$ScriptName -ErrorAction Stop
 
 "@
 
-      $mainFile > "$scriptFilePath"
+      $mainFile | Out-File -FilePath "$scriptFilePath" -Encoding utf8
 
       $content = Get-Content -Path $scriptFilePath
-      Set-Content -Path $scriptFilePath -Value $content -Encoding UTF8 -PassThru -Force
+      Set-Content -Path $scriptFilePath -Value $content -Encoding utf8 -PassThru -Force
 
     }
     catch {
