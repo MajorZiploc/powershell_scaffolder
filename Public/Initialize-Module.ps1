@@ -231,7 +231,7 @@ function Invoke-$ModuleName {
   New-Variable -Name keepLogsForNDays -Value `$(`$appConfig.keepLogsForNDays) -Option ReadOnly,AllScope -Force
 
   `$msg = "Starting process. `$(Get-Date)``n"
-  `$msg += "environment: `$environ``n"
+  `$msg += "environment: `$environ"
   Write-Txt -txt `$msg
   Write-Json -label "appConfig:" -data `$appConfig
 
