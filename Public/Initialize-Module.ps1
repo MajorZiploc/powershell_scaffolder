@@ -1,4 +1,4 @@
-﻿. "$PSScriptRoot/../Private/Shared-Res.ps1"
+. "$PSScriptRoot/../Private/Shared-Res.ps1"
 
 function Initialize-Module {
 param (
@@ -251,7 +251,7 @@ function Invoke-$ModuleName {
     Write-Txt -txt `$msg
     $logCleanupStep
     # update last state json
-    `$lastState | ConvertTo-Json > `$lastStateFilePath
+    `$lastState | ConvertTo-Json | Out-File  -FilePath "`$lastStateFilePath" -Encoding utf8
   }
 }
 
