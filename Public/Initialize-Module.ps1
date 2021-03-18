@@ -1,4 +1,4 @@
-. "$PSScriptRoot/../Private/Shared-Res.ps1"
+﻿. "$PSScriptRoot/../Private/Shared-Res.ps1"
 
 function Initialize-Module {
 param (
@@ -127,7 +127,7 @@ Foreach ($import in @($Public + $Private)) {
 Export-ModuleMember -Function $Public.Basename
 '@
 
-      $moduleString > "$Path\$ModuleName\$ModuleName.psm1"
+      $moduleString | Out-File -FilePath "$Path\$ModuleName\$ModuleName.psm1" -Encoding utf8
 
       $unitTestString = @'
 $PSVersion = $PSVersionTable.PSVersion.Major
@@ -158,7 +158,7 @@ Describe "<name_of_function1> PS$PSVersion Integrations tests" {
 # }
 '@
 
-      $unitTestString > "$Path\$ModuleName\Tests\$ModuleName.Tests.ps1"
+      $unitTestString | Out-File -FilePath "$Path\$ModuleName\Tests\$ModuleName.Tests.ps1" -Encoding utf8
 
       $logingNotes = Get-LoggingNotes
 
@@ -186,7 +186,7 @@ function Program {
 }
 "@
 
-      $mainFile > "$Path\$ModuleName\Private\Program.ps1"
+      $mainFile | Out-File -FilePath "$Path\$ModuleName\Private\Program.ps1" -Encoding utf8
 
       $startTimeInfo = Get-StartTimeInfo
 
@@ -251,7 +251,7 @@ function Invoke-$ModuleName {
     Write-Txt -txt `$msg
     $logCleanupStep
     # update last state json
-    `$lastState | ConvertTo-Json | Out-File  -FilePath "`$lastStateFilePath" -Encoding utf8
+    `$lastState | ConvertTo-Json | Out-File -FilePath "`$lastStateFilePath" -Encoding utf8
   }
 }
 
@@ -260,18 +260,18 @@ Invoke-$ModuleName -ErrorAction Stop
 
 "@
 
-      $runMainFile > "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1"
+      $runMainFile | Out-File -FilePath "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1" -Encoding utf8
 
       $blackListedFileContent = Get-BlackListedVars
-      $blackListedFileContent > "$Path\$ModuleName\$blackListedFileName"
+      $blackListedFileContent | Out-File -FilePath "$Path\$ModuleName\$blackListedFileName" -Encoding utf8
 
       $logHelper = Get-LogCleaner
       $logWriter = Get-LogWriter
-      $logHelper > "$Path\$ModuleName\Private\LogHelper.ps1"
-      $logWriter >> "$Path\$ModuleName\Private\LogHelper.ps1"
+      $logHelper | Out-File -FilePath "$Path\$ModuleName\Private\LogHelper.ps1" -Encoding utf8
+      $logWriter | Out-File -FilePath "$Path\$ModuleName\Private\LogHelper.ps1" -Encoding utf8 -Append
 
       $errorHandler = Get-ErrorHelperContent
-      $errorHandler > "$Path\$ModuleName\Private\ErrorHandler.ps1"
+      $errorHandler | Out-File -FilePath "$Path\$ModuleName\Private\ErrorHandler.ps1" -Encoding utf8
 
       $appJson = @"
 {
@@ -293,15 +293,14 @@ Invoke-$ModuleName -ErrorAction Stop
 }
 "@
 
-      $appJson > $appConfig
-      $lastStateJson > $lastStateConfig
-      $privateConfigJson > $privateConfig
+      $appJson | Out-File -FilePath "$appConfig" -Encoding utf8
+      $lastStateJson | Out-File -FilePath "$lastStateConfig" -Encoding utf8
+      $privateConfigJson | Out-File -FilePath "$privateConfig" -Encoding utf8
 
-      $appJson > $appConfigProd
-      $lastStateJson > $lastStateConfigProd
-      $privateConfigJson > $privateConfigProd
+      $appJson | Out-File -FilePath "$appConfigProd" -Encoding utf8
+      $lastStateJson | Out-File -FilePath "$lastStateConfigProd" -Encoding utf8
 
-      $privateConfigEndPath -replace "\\", "/" > "$Path\$ModuleName\.gitignore"
+      $privateConfigEndPath -replace "\\", "/" | Out-File -FilePath "$Path\$ModuleName\.gitignore" -Encoding utf8
       $gitignore_content = "@
 logs/*
 .vscode
@@ -324,17 +323,8 @@ obj/
 *.dll
 *.wixpdb
 @"
-      $gitignore_content >> "$Path\$ModuleName\.gitignore"
+      $gitignore_content | Out-File -FilePath "$Path\$ModuleName\.gitignore" -Encoding utf8 -Append
       # Copy the public/exported functions into the public folder, private functions into private folder
-
-      Set-Location $Path\$ModuleName
-      @('*.ps1', '*.psd1', '*.psm1', '*.json', '*.txt', '.gitignore') `
-      | ForEach-Object {
-        Get-ChildItem $_ -Recurse | ForEach-Object {
-          $content = Get-Content -Path $_
-          Set-Content -Path $_.Fullname -Value $content -Encoding UTF8 -PassThru -Force
-        }
-      }
 
     }
     catch {
