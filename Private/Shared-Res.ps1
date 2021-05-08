@@ -129,7 +129,7 @@ function Write-Json {
   `$label = "`$label``n"
 
   `$jsonc = `$data | Select-Object -Property * | ConvertTo-Json -Compress
-  `$json =  `$data | Select-Object -Property * | ConvertTo-Json 
+  `$json =  `$data | Select-Object -Property * | ConvertTo-Json
   Write-Txt -txt "`$label`$jsonc" -logPath "`$summaryFile" -whereToLog "10"
   Write-Txt -txt "`$label`$json" -logPath "`$summaryFile" -whereToLog "01"
 }
@@ -148,7 +148,7 @@ function Get-LoggingNotes {
 # When parsing the logs for data on runs of this program,
 #   the json data gives us more control over the data.
 # Write(append) to the log files like so:
-#   For structured data (powershell custom objects): 
+#   For structured data (powershell custom objects):
 #      Write-Json -label "Message that appears one line before the data" -data `$data
 #   For non structured data:
 #      Write-Txt -txt `$msg
@@ -190,9 +190,9 @@ DO NOT USE THE FOLLOWING VARIABLES.
   `$appConfig
   `$lastState
   `$lastStateFilePath
-  `$thisScriptName 
+  `$thisScriptName
   `$settingsFolder
-  `$secrets 
+  `$secrets
   `$logFile
   `$logFolder
   `$logDate
