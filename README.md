@@ -1,25 +1,19 @@
 # Powershell Module Scaffolder
 
-## Depends on powershell 5.1 (the default windows powershell on most systems)
+## Compatible with powershell core and powershell 5.1 (the default windows powershell on most systems)
 
-## Cloning
-Clone this repository into a modules path.
+## Install
 
-
-Check the list of potential module path folders with:
-> $env:PSModulePath -replace ";", "`n" 
-
-I typically store them in the directory that is a distant descendant under my Documents folder
-
-All powershell scripts and modules should be stored in the script and module paths recommended by powershell for most convenience.
+> Install-Module -Name powershell_scaffolder -Scope CurrentUser -Force
 
 ## Scaffolding a project/module/script using this module
 Check available modules on your PC to see if this project is in the listing:
+
 > Get-Module -ListAvailable -Name powershell_scaffolder
 
 Output of this command should be similar to:
 
->  Directory: C:\Users\you\OneDrive\Documents\WindowsPowerShell\Modules
+>  Directory: C:\Users\you\Documents\WindowsPowerShell\Modules
 
 
 ` ModuleType Version    Name                                ExportedCommands `
@@ -37,3 +31,20 @@ To create a powershell script:
 > Initialize-Script
 
 Follow the prompts that this commands asks you, and you will have your powershell module/project/script scaffolded!
+
+## Development Tools
+- VSCode
+- Powershell extension for vscode
+
+## Publishing to PSGallery
+REQUIRES PSCORE
+
+```
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+Import-Module -Name powershell_scaffolder
+
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force # DOESNT WORK FOR NONADMIN
+
+Publish-Module -name powershell_scaffolder -NuGetApiKey 'api_key'
+```
