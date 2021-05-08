@@ -133,8 +133,8 @@ Export-ModuleMember -Function $Public.Basename
 $PSVersion = $PSVersionTable.PSVersion.Major
 # import the file with the functions you are testing
 # . $PSScriptRoot"/../../Public/Get-Num.ps1"
-Describe "<name_of_function1> PS$PSVersion Integrations tests" { 
-  Context "Strict mode" { 
+Describe "<name_of_function1> PS$PSVersion Integrations tests" {
+  Context "Strict mode" {
     Set-StrictMode -Version latest
     It "should get valid data" {
       # Simple Mock example
@@ -149,8 +149,8 @@ Describe "<name_of_function1> PS$PSVersion Integrations tests" {
     }
   }
 }
-# Describe "<name_of_function2> PS$PSVersion Integrations tests" { 
-#   Context "Strict mode" { 
+# Describe "<name_of_function2> PS$PSVersion Integrations tests" {
+#   Context "Strict mode" {
 #     Set-StrictMode -Version latest
 #     It "should get valid data" {
 #     }
