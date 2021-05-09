@@ -26,5 +26,5 @@ jobs:
         uses: pcgeek86/publish-powershell-module-action@v19
         id: publish-module
         with:
-          modulePath: ./powershell_scaffolder
+          modulePath: /home/runner/work/powershell_scaffolder
           NuGetApiKey: ${{ secrets.PS_GALLERY_KEY }}
