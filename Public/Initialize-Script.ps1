@@ -1,4 +1,4 @@
-﻿. "$PSScriptRoot/../Private/Shared-Res.ps1"
+. "$PSScriptRoot/../Private/Shared-Res.ps1"
 
 function Initialize-Script {
 param (
