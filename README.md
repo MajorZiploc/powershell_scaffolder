@@ -36,15 +36,3 @@ Follow the prompts that this commands asks you, and you will have your powershel
 - VSCode
 - Powershell extension for vscode
 
-## Publishing to PSGallery
-REQUIRES PSCORE
-
-```
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
-Import-Module -Name powershell_scaffolder
-
-Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force # DOESNT WORK FOR NONADMIN
-
-Publish-Module -name powershell_scaffolder -NuGetApiKey 'api_key'
-```
