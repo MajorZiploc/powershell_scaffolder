@@ -4,7 +4,7 @@ function Get-LogCleaner {
   param ()
   $logHelper = @"
 
-function Clean-Logs {
+function Remove-Log {
   [CmdletBinding()]
   param(
     [Parameter(Mandatory = `$true)]
@@ -225,7 +225,7 @@ function Get-LogCleanupStep {
 
   $logCleanupStep = @"
 # Delete old logs
-    Clean-Logs -keepLogFilesForNDays `$keepLogsForNDays
+    Remove-Log -keepLogFilesForNDays `$keepLogsForNDays
 "@
   return $logCleanupStep
 }
