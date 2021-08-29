@@ -49,7 +49,7 @@ function Get-ErrorHelperContent {
   param ()
   $errorHandler = @"
 
-function Get-ErrorDetails {
+function Get-ErrorDetail {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=`$true)]
