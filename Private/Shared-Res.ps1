@@ -5,7 +5,7 @@ function Get-LogCleaner {
   $logHelper = @"
 
 function Remove-Log {
-  [CmdletBinding()]
+  [CmdletBinding(SupportsShouldProcess)]
   param(
     [Parameter(Mandatory = `$true)]
     [ValidateRange(0, [int]::MaxValue)]
@@ -33,7 +33,7 @@ function Remove-Log {
     `$daysOld = `$timespan.Days
     if (`$daysOld -gt `$keepLogFilesForNDays) {
       # delete the log date folder
-      Remove-Item -Path `$_.FullName -Recurse
+      Remove-Item -Path `$_.FullName -Recurse -WhatIf:`$WhatIfPreference
     }
   }
 }
@@ -225,7 +225,7 @@ function Get-LogCleanupStep {
 
   $logCleanupStep = @"
 # Delete old logs
-    Remove-Log -keepLogFilesForNDays `$keepLogsForNDays
+    Remove-Log -keepLogFilesForNDays `$keepLogsForNDays #-WhatIf
 "@
   return $logCleanupStep
 }
