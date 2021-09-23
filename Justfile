@@ -1,3 +1,5 @@
+# vim: set filetype=bash :
+
 set shell := ["pwsh", "-c"]
 
 install:
