@@ -1,4 +1,4 @@
-# vim: set filetype=bash :
+# vim: filetype=bash
 
 set shell := ["pwsh", "-c"]
 
