@@ -1,6 +1,9 @@
 # Powershell Module Scaffolder
 
-## Compatible with powershell core and powershell 5.1 (the default windows powershell on most systems)
+## Compatible with powershell core (pwsh) and powershell 5.1 (powershell) (the default windows powershell on most systems)
+
+## Purpose
+A utility library for quickly creating more robust powershell scripts or modules quickly.
 
 ## Install
 
@@ -27,12 +30,19 @@ Now you can call the exported commands from this module in your powershell termi
 To create a powershell module or project:
 > Initialize-Module
 
+Or you can provide all arguments so that you do not get a prompt (non powershell type shells require this route):
+> pwsh -Command '& {Set-StrictMode -Version 3; Import-Module powershell_scaffolder; Initialize-Module -Path ./ -ModuleName "test_module" -Author "You!" -Description "Test powershell module" -ModuleVersion "0.0.1" -PowershellVersion "7.0" -CompanyName "N/A" -CopyRight "N/A";}'
+
 To create a powershell script:
 > Initialize-Script
+
+Or you can provide all arguments so that you do not get a prompt (non powershell type shells require this route):
+> pwsh -Command '& {Set-StrictMode -Version 3; Import-Module powershell_scaffolder; Initialize-Script -Path ./ -ScriptName "test_script" -ShouldUseAdvLogging }'
 
 Follow the prompts that this commands asks you, and you will have your powershell module/project/script scaffolded!
 
 ## Development Tools
-- VSCode
-- Powershell extension for vscode
+- vscode
+  - ms-vscode.powershell
+- just (command runner) v0.10.0
 
