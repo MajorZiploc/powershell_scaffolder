@@ -247,6 +247,7 @@ function Invoke-$ModuleName {
   }
 
   finally {
+    `$lastState.lastRun = (Get-Date).ToString(`$appConfig.dateFormat)
     `$msg = "Finished process. `$(Get-Date)``n"
     Write-Txt -txt `$msg
     $logCleanupStep
@@ -279,12 +280,14 @@ Invoke-$ModuleName -ErrorAction Stop
   "keepLogsForNDays": 14,
   "logFileName": "$($ModuleName)",
   "summaryFolderName": "summary",
-  "runFolderName": "per_run"
+  "runFolderName": "per_run",
+  "dateFormat": "yyyy/MM/dd HH:mm:ss"
 }
 "@
       $lastStateJson = @"
 {
-  "state": "Any state from the last run of this program (or last update of this file) that is required for this run."
+  "state": "Any state from the last run of this program (or last update of this file) that is required for this run.",
+  "lastRun": null
 }
 "@
       $privateConfigJson = @"
