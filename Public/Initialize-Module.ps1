@@ -58,42 +58,42 @@ function Initialize-Module {
         }
 
         # Create the module and private function directories
-        mkdir $Path\$ModuleName
-        mkdir $Path\$ModuleName\Private
-        mkdir $Path\$ModuleName\Public
-        mkdir $Path\$ModuleName\en-US # For about_Help files
-        mkdir $Path\$ModuleName\Tests
-        mkdir $Path\$ModuleName\settings
-        mkdir $Path\$ModuleName\settings\test
-        mkdir $Path\$ModuleName\settings\prod
+        mkdir $Path/$ModuleName
+        mkdir $Path/$ModuleName/Private
+        mkdir $Path/$ModuleName/Public
+        mkdir $Path/$ModuleName/en-US # For about_Help files
+        mkdir $Path/$ModuleName/Tests
+        mkdir $Path/$ModuleName/settings
+        mkdir $Path/$ModuleName/settings/test
+        mkdir $Path/$ModuleName/settings/prod
 
         $appConfigEndPath = "appsettings.json"
         $lastStateEndPath = "lastState.json"
-        $appConfig = "$Path\$ModuleName\settings\test\$appConfigEndPath"
-        $lastStateConfig = "$Path\$ModuleName\settings\test\$lastStateEndPath"
-        $appConfigProd = "$Path\$ModuleName\settings\prod\$appConfigEndPath"
-        $lastStateConfigProd = "$Path\$ModuleName\settings\prod\$lastStateEndPath"
-        $privateConfigEndPath = "Private\secrets.json"
-        $privateConfig = "$Path\$ModuleName\$privateConfigEndPath"
+        $appConfig = "$Path/$ModuleName/settings/test/$appConfigEndPath"
+        $lastStateConfig = "$Path/$ModuleName/settings/test/$lastStateEndPath"
+        $appConfigProd = "$Path/$ModuleName/settings/prod/$appConfigEndPath"
+        $lastStateConfigProd = "$Path/$ModuleName/settings/prod/$lastStateEndPath"
+        $privateConfigEndPath = "Private/secrets.json"
+        $privateConfig = "$Path/$ModuleName/$privateConfigEndPath"
         $blackListedFileName = "BlackListedVariables.txt"
 
         #Create the module and related files
-        New-Item "$Path\$ModuleName\$ModuleName.psm1" -ItemType File
-        New-Item "$Path\$ModuleName\$ModuleName.Format.ps1xml" -ItemType File
-        New-Item "$Path\$ModuleName\en-US\about_$ModuleName.help.txt" -ItemType File
-        New-Item "$Path\$ModuleName\Tests\$ModuleName.Tests.ps1" -ItemType File
-        New-Item "$Path\$ModuleName\Private\ErrorHandler.ps1" -ItemType File
-        New-Item "$Path\$ModuleName\Private\LogHelper.ps1" -ItemType File
-        New-Item "$Path\$ModuleName\Private\Program.ps1" -ItemType File
-        New-Item "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1" -ItemType File
-        New-Item "$Path\$ModuleName\$blackListedFileName" -ItemType File
+        New-Item "$Path/$ModuleName/$ModuleName.psm1" -ItemType File
+        New-Item "$Path/$ModuleName/$ModuleName.Format.ps1xml" -ItemType File
+        New-Item "$Path/$ModuleName/en-US/about_$ModuleName.help.txt" -ItemType File
+        New-Item "$Path/$ModuleName/Tests/$ModuleName.Tests.ps1" -ItemType File
+        New-Item "$Path/$ModuleName/Private/ErrorHandler.ps1" -ItemType File
+        New-Item "$Path/$ModuleName/Private/LogHelper.ps1" -ItemType File
+        New-Item "$Path/$ModuleName/Private/Program.ps1" -ItemType File
+        New-Item "$Path/$ModuleName/Public/Invoke-$ModuleName.ps1" -ItemType File
+        New-Item "$Path/$ModuleName/$blackListedFileName" -ItemType File
         New-Item $appConfig -ItemType File
         New-Item $lastStateConfig -ItemType File
         New-Item $appConfigProd -ItemType File
         New-Item $lastStateConfigProd -ItemType File
         New-Item $privateConfig -ItemType File
-        New-Item "$Path\$ModuleName\.gitignore" -ItemType File
-        New-ModuleManifest -Path $Path\$ModuleName\$ModuleName.psd1 `
+        New-Item "$Path/$ModuleName/.gitignore" -ItemType File
+        New-ModuleManifest -Path $Path/$ModuleName/$ModuleName.psd1 `
            -RootModule "$ModuleName.psm1" `
            -Description $Description `
            -PowerShellVersion $PowershellVersion `
@@ -107,8 +107,8 @@ function Initialize-Module {
 
         $moduleString = @'
 #Get public and private function definition files.
-$Public = @( Get-ChildItem -Path $PSScriptRoot\Public\*.ps1 -ErrorAction SilentlyContinue )
-$Private = @( Get-ChildItem -Path $PSScriptRoot\Private\*.ps1 -ErrorAction SilentlyContinue )
+$Public = @( Get-ChildItem -Path $PSScriptRoot/Public/*.ps1 -ErrorAction SilentlyContinue )
+$Private = @( Get-ChildItem -Path $PSScriptRoot/Private/*.ps1 -ErrorAction SilentlyContinue )
 
 #Dot source the files
 Foreach ($import in @($Public + $Private)) {
@@ -127,7 +127,7 @@ Foreach ($import in @($Public + $Private)) {
 Export-ModuleMember -Function $Public.Basename
 '@
 
-        $moduleString | Out-File -FilePath "$Path\$ModuleName\$ModuleName.psm1" -Encoding utf8
+        $moduleString | Out-File -FilePath "$Path/$ModuleName/$ModuleName.psm1" -Encoding utf8
 
         $unitTestString = @'
 $PSVersion = $PSVersionTable.PSVersion.Major
@@ -158,7 +158,7 @@ Describe "<name_of_function1> PS$PSVersion Integrations tests" {
 # }
 '@
 
-        $unitTestString | Out-File -FilePath "$Path\$ModuleName\Tests\$ModuleName.Tests.ps1" -Encoding utf8
+        $unitTestString | Out-File -FilePath "$Path/$ModuleName/Tests/$ModuleName.Tests.ps1" -Encoding utf8
 
         $logingNotes = Get-LoggingNotes
 
@@ -186,7 +186,7 @@ function Program {
 }
 "@
 
-        $mainFile | Out-File -FilePath "$Path\$ModuleName\Private\Program.ps1" -Encoding utf8
+        $mainFile | Out-File -FilePath "$Path/$ModuleName/Private/Program.ps1" -Encoding utf8
 
         $startTimeInfo = Get-StartTimeInfo
 
@@ -210,13 +210,13 @@ function Invoke-$ModuleName {
 
   # The environment to use. Determines the app config and state objects to use
   New-Variable -Name environ -Value `$("test") -Option ReadOnly,AllScope -Force
-  New-Variable -Name settingsFolder -Value `$("`$PSScriptRoot\..\settings") -Option ReadOnly,AllScope -Force
-  New-Variable -Name appConfig -Value `$(Get-Content -Path "`$settingsFolder\`$environ\appsettings.json" -Raw | ConvertFrom-Json) -Option ReadOnly,AllScope -Force
+  New-Variable -Name settingsFolder -Value `$("`$PSScriptRoot/../settings") -Option ReadOnly,AllScope -Force
+  New-Variable -Name appConfig -Value `$(Get-Content -Path "`$settingsFolder/`$environ/appsettings.json" -Raw | ConvertFrom-Json) -Option ReadOnly,AllScope -Force
   # Secrets object. Things that you do not want to put in git go inside this. Add to the secrets json in the private folder
   # Need to uncomment this line if you want to use secrets. You will likely need to create the file aswell.
-  # New-Variable -Name secrets -Value `$(`$PSScriptRoot"\..\$privateConfigEndPath") -Option ReadOnly,AllScope -Force
+  # New-Variable -Name secrets -Value `$(`$PSScriptRoot"/../$privateConfigEndPath") -Option ReadOnly,AllScope -Force
 
-  New-Variable -Name lastStateFilePath -Value `$("`$settingsFolder\`$environ\$lastStateEndPath") -Option ReadOnly,AllScope -Force
+  New-Variable -Name lastStateFilePath -Value `$("`$settingsFolder/`$environ/$lastStateEndPath") -Option ReadOnly,AllScope -Force
   New-Variable -Name lastState -Value `$(Get-Content -Path `$lastStateFilePath -Raw | ConvertFrom-Json) -Option ReadOnly,AllScope -Force
 
   New-Variable -Name thisScriptName -Value `$(`$MyInvocation.MyCommand.Name -replace ".ps1", "") -Option ReadOnly,AllScope -Force
@@ -261,18 +261,18 @@ Invoke-$ModuleName -ErrorAction Stop
 
 "@
 
-        $runMainFile | Out-File -FilePath "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1" -Encoding utf8
+        $runMainFile | Out-File -FilePath "$Path/$ModuleName/Public/Invoke-$ModuleName.ps1" -Encoding utf8
 
         $blackListedFileContent = Get-BlackListedVars
-        $blackListedFileContent | Out-File -FilePath "$Path\$ModuleName\$blackListedFileName" -Encoding utf8
+        $blackListedFileContent | Out-File -FilePath "$Path/$ModuleName/$blackListedFileName" -Encoding utf8
 
         $logHelper = Get-LogCleaner
         $logWriter = Get-LogWriter
-        $logHelper | Out-File -FilePath "$Path\$ModuleName\Private\LogHelper.ps1" -Encoding utf8
-        $logWriter | Out-File -FilePath "$Path\$ModuleName\Private\LogHelper.ps1" -Encoding utf8 -Append
+        $logHelper | Out-File -FilePath "$Path/$ModuleName/Private/LogHelper.ps1" -Encoding utf8
+        $logWriter | Out-File -FilePath "$Path/$ModuleName/Private/LogHelper.ps1" -Encoding utf8 -Append
 
         $errorHandler = Get-ErrorHelperContent
-        $errorHandler | Out-File -FilePath "$Path\$ModuleName\Private\ErrorHandler.ps1" -Encoding utf8
+        $errorHandler | Out-File -FilePath "$Path/$ModuleName/Private/ErrorHandler.ps1" -Encoding utf8
 
         $appJson = @"
 {
@@ -303,7 +303,7 @@ Invoke-$ModuleName -ErrorAction Stop
         $appJson | Out-File -FilePath "$appConfigProd" -Encoding utf8
         $lastStateJson | Out-File -FilePath "$lastStateConfigProd" -Encoding utf8
 
-        $privateConfigEndPath -replace "\\","/" | Out-File -FilePath "$Path\$ModuleName\.gitignore" -Encoding utf8
+        $privateConfigEndPath -replace "\\","/" | Out-File -FilePath "$Path/$ModuleName/.gitignore" -Encoding utf8
         $gitignore_content = "@
 logs/*
 .vscode
@@ -326,7 +326,7 @@ obj/
 *.dll
 *.wixpdb
 @"
-        $gitignore_content | Out-File -FilePath "$Path\$ModuleName\.gitignore" -Encoding utf8 -Append
+        $gitignore_content | Out-File -FilePath "$Path/$ModuleName/.gitignore" -Encoding utf8 -Append
         # Copy the public/exported functions into the public folder, private functions into private folder
 
       }
@@ -337,3 +337,4 @@ obj/
   }
   Invoke-Scaffold -ErrorAction Stop
 }
+
