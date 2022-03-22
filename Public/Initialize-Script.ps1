@@ -24,7 +24,7 @@ function Initialize-Script {
           $Path = "./"
         }
 
-        $scriptFilePath = "$Path\$ScriptName.ps1"
+        $scriptFilePath = "$Path/$ScriptName.ps1"
 
         New-Item "$scriptFilePath" -ItemType File
 
