@@ -1,54 +1,54 @@
 . "$PSScriptRoot/../Private/Shared-Res.ps1"
 
 function Initialize-Script {
-param (
-  [Parameter(Mandatory = $false)]
-  [string]
-  $Path = (Read-Host -prompt "Root path where script should be scaffolded (./): ")
-  ,
-  [Parameter(Mandatory = $true, HelpMessage = "May only be made up of numbers, letters, and some special characters. Regex that passes: ^[\w\d._-]+$")]
-  [string]
-  [ValidatePattern("^[\w\d._-]+$")]
-  $ScriptName
-  ,
-  [Parameter(Mandatory = $false)]
-  [boolean]
-  $ShouldUseAdvLogging=$false
-)
-function Invoke-Scaffold {
-  [CmdletBinding()]
-  param ()
-  process {
-    try {
-      if (($null -eq $Path) -or '' -eq $Path) {
-        $Path = "./"
-      }
+  param(
+    [Parameter(Mandatory = $false)]
+    [string]
+    $Path = (Read-Host -Prompt "Root path where script should be scaffolded (./): ")
+    ,
+    [Parameter(Mandatory = $true,HelpMessage = "May only be made up of numbers, letters, and some special characters. Regex that passes: ^[\w\d._-]+$")]
+    [string]
+    [ValidatePattern("^[\w\d._-]+$")]
+    $ScriptName
+    ,
+    [Parameter(Mandatory = $false)]
+    [boolean]
+    $ShouldUseAdvLogging = $false
+  )
+  function Invoke-Scaffold {
+    [CmdletBinding()]
+    param()
+    process {
+      try {
+        if (($null -eq $Path) -or '' -eq $Path) {
+          $Path = "./"
+        }
 
-      $scriptFilePath = "$Path\$ScriptName.ps1"
+        $scriptFilePath = "$Path\$ScriptName.ps1"
 
-      New-Item "$scriptFilePath" -ItemType File
+        New-Item "$scriptFilePath" -ItemType File
 
-      $errorHelper = Get-ErrorHelperContent
-      $startTimeInfo = Get-StartTimeInfo
-      $logWriter = Get-LogWriter
-      $logFolder = @"
+        $errorHelper = Get-ErrorHelperContent
+        $startTimeInfo = Get-StartTimeInfo
+        $logWriter = Get-LogWriter
+        $logFolder = @"
 New-Variable -Name logFolder -Value `$("./logs/`$thisScriptName") -Option ReadOnly,AllScope -Force
 "@
-      $logCleaner = ""
-      $logCleanupStep = ""
-      $logingNotes = Get-LoggingNotes
+        $logCleaner = ""
+        $logCleanupStep = ""
+        $logingNotes = Get-LoggingNotes
 
-      if ($ShouldUseAdvLogging) {
-        $logCleaner = Get-LogCleaner
+        if ($ShouldUseAdvLogging) {
+          $logCleaner = Get-LogCleaner
 
-        $logFolder = @"
+          $logFolder = @"
 New-Variable -Name logFolder -Value `$("`$PSScriptRoot/logs/`$thisScriptName") -Option ReadOnly,AllScope -Force
 "@
 
-        $logCleanupStep = Get-LogCleanupStep
-      }
+          $logCleanupStep = Get-LogCleanupStep
+        }
 
-      $mainFile = @"
+        $mainFile = @"
 $logingNotes
 Set-StrictMode -Version 1
 
@@ -98,16 +98,16 @@ Invoke-$ScriptName -ErrorAction Stop
 
 "@
 
-      $mainFile | Out-File -FilePath "$scriptFilePath" -Encoding utf8
+        $mainFile | Out-File -FilePath "$scriptFilePath" -Encoding utf8
 
-      $content = Get-Content -Path $scriptFilePath
-      Set-Content -Path $scriptFilePath -Value $content -Encoding utf8 -PassThru -Force
+        $content = Get-Content -Path $scriptFilePath
+        Set-Content -Path $scriptFilePath -Value $content -Encoding utf8 -Passthru -Force
 
-    }
-    catch {
-      Write-Error $_
+      }
+      catch {
+        Write-Error $_
+      }
     }
   }
-}
-Invoke-Scaffold -ErrorAction Stop
+  Invoke-Scaffold -ErrorAction Stop
 }

@@ -1,111 +1,111 @@
 . "$PSScriptRoot/../Private/Shared-Res.ps1"
 
 function Initialize-Module {
-param (
-  [Parameter(Mandatory = $false)]
-  [string]
-  $Path = (Read-Host -prompt "Root path where project should be scaffolded (./): "),
-  [Parameter(Mandatory = $true, HelpMessage = "May only be made up of numbers, letters, and some special characters. Regex that passes: ^[\w\d._-]+$")]
-  [string]
-  [ValidatePattern("^[\w\d._-]+$")]
-  $ModuleName,
-  [Parameter(Mandatory = $false)]
-  [string]
-  $Author = (Read-Host -prompt "Author of Project (N/A): "),
-  [Parameter(Mandatory = $false)]
-  [string]
-  $Description = (Read-Host -prompt "Project Description (N/A): "),
-  [Parameter(Mandatory = $false)]
-  [string]
-  $PowershellVersion = (Read-Host -prompt "Powershell Version (5.1): "),
-  [Parameter(Mandatory = $false)]
-  [string]
-  $ModuleVersion = (Read-Host -prompt "Starting version of this project (0.1): "),
-  [Parameter(Mandatory = $false)]
-  [string]
-  $CompanyName = (Read-Host -prompt "Company name (N/A): "),
-  [Parameter(Mandatory = $false)]
-  [string]
-  $CopyRight = (Read-Host -prompt "Copy right (N/A): ")
-)
-function Invoke-Scaffold {
-  [CmdletBinding()]
-  param ()
-  process {
-    try {
-      # $pv = [System.Version]::Parse($PowershellVersion)
-      # $mv = [System.Version]::Parse($ModuleVersion)
-      if (($null -eq $Path) -or '' -eq $Path) {
-        $Path = "./"
-      }
-      if (($null -eq $Author) -or '' -eq $Author) {
-        $Author = "N/A"
-      }
-      if (($null -eq $Description) -or '' -eq $Description) {
-        $Description = "N/A"
-      }
-      if (($null -eq $PowershellVersion) -or '' -eq $PowershellVersion) {
-        $PowershellVersion = "5.1"
-      }
-      if (($null -eq $ModuleVersion) -or '' -eq $ModuleVersion) {
-        $ModuleVersion = "0.1"
-      }
-      if (($null -eq $CompanyName) -or '' -eq $CompanyName) {
-        $CompanyName = "N/A"
-      }
-      if (($null -eq $CopyRight) -or '' -eq $CopyRight) {
-        $CopyRight = "N/A"
-      }
+  param(
+    [Parameter(Mandatory = $false)]
+    [string]
+    $Path = (Read-Host -Prompt "Root path where project should be scaffolded (./): "),
+    [Parameter(Mandatory = $true,HelpMessage = "May only be made up of numbers, letters, and some special characters. Regex that passes: ^[\w\d._-]+$")]
+    [string]
+    [ValidatePattern("^[\w\d._-]+$")]
+    $ModuleName,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $Author = (Read-Host -Prompt "Author of Project (N/A): "),
+    [Parameter(Mandatory = $false)]
+    [string]
+    $Description = (Read-Host -Prompt "Project Description (N/A): "),
+    [Parameter(Mandatory = $false)]
+    [string]
+    $PowershellVersion = (Read-Host -Prompt "Powershell Version (5.1): "),
+    [Parameter(Mandatory = $false)]
+    [string]
+    $ModuleVersion = (Read-Host -Prompt "Starting version of this project (0.1): "),
+    [Parameter(Mandatory = $false)]
+    [string]
+    $CompanyName = (Read-Host -Prompt "Company name (N/A): "),
+    [Parameter(Mandatory = $false)]
+    [string]
+    $CopyRight = (Read-Host -Prompt "Copy right (N/A): ")
+  )
+  function Invoke-Scaffold {
+    [CmdletBinding()]
+    param()
+    process {
+      try {
+        # $pv = [System.Version]::Parse($PowershellVersion)
+        # $mv = [System.Version]::Parse($ModuleVersion)
+        if (($null -eq $Path) -or '' -eq $Path) {
+          $Path = "./"
+        }
+        if (($null -eq $Author) -or '' -eq $Author) {
+          $Author = "N/A"
+        }
+        if (($null -eq $Description) -or '' -eq $Description) {
+          $Description = "N/A"
+        }
+        if (($null -eq $PowershellVersion) -or '' -eq $PowershellVersion) {
+          $PowershellVersion = "5.1"
+        }
+        if (($null -eq $ModuleVersion) -or '' -eq $ModuleVersion) {
+          $ModuleVersion = "0.1"
+        }
+        if (($null -eq $CompanyName) -or '' -eq $CompanyName) {
+          $CompanyName = "N/A"
+        }
+        if (($null -eq $CopyRight) -or '' -eq $CopyRight) {
+          $CopyRight = "N/A"
+        }
 
-      # Create the module and private function directories
-      mkdir $Path\$ModuleName
-      mkdir $Path\$ModuleName\Private
-      mkdir $Path\$ModuleName\Public
-      mkdir $Path\$ModuleName\en-US # For about_Help files
-      mkdir $Path\$ModuleName\Tests
-      mkdir $Path\$ModuleName\settings
-      mkdir $Path\$ModuleName\settings\test
-      mkdir $Path\$ModuleName\settings\prod
+        # Create the module and private function directories
+        mkdir $Path\$ModuleName
+        mkdir $Path\$ModuleName\Private
+        mkdir $Path\$ModuleName\Public
+        mkdir $Path\$ModuleName\en-US # For about_Help files
+        mkdir $Path\$ModuleName\Tests
+        mkdir $Path\$ModuleName\settings
+        mkdir $Path\$ModuleName\settings\test
+        mkdir $Path\$ModuleName\settings\prod
 
-      $appConfigEndPath = "appsettings.json"
-      $lastStateEndPath = "lastState.json"
-      $appConfig = "$Path\$ModuleName\settings\test\$appConfigEndPath"
-      $lastStateConfig = "$Path\$ModuleName\settings\test\$lastStateEndPath"
-      $appConfigProd = "$Path\$ModuleName\settings\prod\$appConfigEndPath"
-      $lastStateConfigProd = "$Path\$ModuleName\settings\prod\$lastStateEndPath"
-      $privateConfigEndPath = "Private\secrets.json"
-      $privateConfig = "$Path\$ModuleName\$privateConfigEndPath"
-      $blackListedFileName = "BlackListedVariables.txt"
+        $appConfigEndPath = "appsettings.json"
+        $lastStateEndPath = "lastState.json"
+        $appConfig = "$Path\$ModuleName\settings\test\$appConfigEndPath"
+        $lastStateConfig = "$Path\$ModuleName\settings\test\$lastStateEndPath"
+        $appConfigProd = "$Path\$ModuleName\settings\prod\$appConfigEndPath"
+        $lastStateConfigProd = "$Path\$ModuleName\settings\prod\$lastStateEndPath"
+        $privateConfigEndPath = "Private\secrets.json"
+        $privateConfig = "$Path\$ModuleName\$privateConfigEndPath"
+        $blackListedFileName = "BlackListedVariables.txt"
 
-      #Create the module and related files
-      New-Item "$Path\$ModuleName\$ModuleName.psm1" -ItemType File
-      New-Item "$Path\$ModuleName\$ModuleName.Format.ps1xml" -ItemType File
-      New-Item "$Path\$ModuleName\en-US\about_$ModuleName.help.txt" -ItemType File
-      New-Item "$Path\$ModuleName\Tests\$ModuleName.Tests.ps1" -ItemType File
-      New-Item "$Path\$ModuleName\Private\ErrorHandler.ps1" -ItemType File
-      New-Item "$Path\$ModuleName\Private\LogHelper.ps1" -ItemType File
-      New-Item "$Path\$ModuleName\Private\Program.ps1" -ItemType File
-      New-Item "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1" -ItemType File
-      New-Item "$Path\$ModuleName\$blackListedFileName" -ItemType File
-      New-Item $appConfig -ItemType File
-      New-Item $lastStateConfig -ItemType File
-      New-Item $appConfigProd -ItemType File
-      New-Item $lastStateConfigProd -ItemType File
-      New-Item $privateConfig -ItemType File
-      New-Item "$Path\$ModuleName\.gitignore" -ItemType File
-      New-ModuleManifest -Path $Path\$ModuleName\$ModuleName.psd1 `
-        -RootModule "$ModuleName.psm1" `
-        -Description $Description `
-        -PowerShellVersion $PowershellVersion `
-        -Author $Author `
-        -CompanyName $CompanyName `
-        -ModuleVersion $ModuleVersion `
-        -FunctionsToExport "*" `
-        -CmdletsToExport "*" `
-        -Copyright $CopyRight
+        #Create the module and related files
+        New-Item "$Path\$ModuleName\$ModuleName.psm1" -ItemType File
+        New-Item "$Path\$ModuleName\$ModuleName.Format.ps1xml" -ItemType File
+        New-Item "$Path\$ModuleName\en-US\about_$ModuleName.help.txt" -ItemType File
+        New-Item "$Path\$ModuleName\Tests\$ModuleName.Tests.ps1" -ItemType File
+        New-Item "$Path\$ModuleName\Private\ErrorHandler.ps1" -ItemType File
+        New-Item "$Path\$ModuleName\Private\LogHelper.ps1" -ItemType File
+        New-Item "$Path\$ModuleName\Private\Program.ps1" -ItemType File
+        New-Item "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1" -ItemType File
+        New-Item "$Path\$ModuleName\$blackListedFileName" -ItemType File
+        New-Item $appConfig -ItemType File
+        New-Item $lastStateConfig -ItemType File
+        New-Item $appConfigProd -ItemType File
+        New-Item $lastStateConfigProd -ItemType File
+        New-Item $privateConfig -ItemType File
+        New-Item "$Path\$ModuleName\.gitignore" -ItemType File
+        New-ModuleManifest -Path $Path\$ModuleName\$ModuleName.psd1 `
+           -RootModule "$ModuleName.psm1" `
+           -Description $Description `
+           -PowerShellVersion $PowershellVersion `
+           -Author $Author `
+           -CompanyName $CompanyName `
+           -ModuleVersion $ModuleVersion `
+           -FunctionsToExport "*" `
+           -CmdletsToExport "*" `
+           -Copyright $CopyRight
         # -FormatsToProcess "$ModuleName.Format.ps1xml" `
 
-      $moduleString = @'
+        $moduleString = @'
 #Get public and private function definition files.
 $Public = @( Get-ChildItem -Path $PSScriptRoot\Public\*.ps1 -ErrorAction SilentlyContinue )
 $Private = @( Get-ChildItem -Path $PSScriptRoot\Private\*.ps1 -ErrorAction SilentlyContinue )
@@ -127,9 +127,9 @@ Foreach ($import in @($Public + $Private)) {
 Export-ModuleMember -Function $Public.Basename
 '@
 
-      $moduleString | Out-File -FilePath "$Path\$ModuleName\$ModuleName.psm1" -Encoding utf8
+        $moduleString | Out-File -FilePath "$Path\$ModuleName\$ModuleName.psm1" -Encoding utf8
 
-      $unitTestString = @'
+        $unitTestString = @'
 $PSVersion = $PSVersionTable.PSVersion.Major
 # import the file with the functions you are testing
 # . $PSScriptRoot"/../../Public/Get-Num.ps1"
@@ -158,11 +158,11 @@ Describe "<name_of_function1> PS$PSVersion Integrations tests" {
 # }
 '@
 
-      $unitTestString | Out-File -FilePath "$Path\$ModuleName\Tests\$ModuleName.Tests.ps1" -Encoding utf8
+        $unitTestString | Out-File -FilePath "$Path\$ModuleName\Tests\$ModuleName.Tests.ps1" -Encoding utf8
 
-      $logingNotes = Get-LoggingNotes
+        $logingNotes = Get-LoggingNotes
 
-      $mainFile = @"
+        $mainFile = @"
 $logingNotes
 # See the black listed variables file to see what variables to not reassign:
 # By default, if you try and reassign a black listed variable, it will throw an error.
@@ -186,13 +186,13 @@ function Program {
 }
 "@
 
-      $mainFile | Out-File -FilePath "$Path\$ModuleName\Private\Program.ps1" -Encoding utf8
+        $mainFile | Out-File -FilePath "$Path\$ModuleName\Private\Program.ps1" -Encoding utf8
 
-      $startTimeInfo = Get-StartTimeInfo
+        $startTimeInfo = Get-StartTimeInfo
 
-      $logCleanupStep = Get-LogCleanupStep
+        $logCleanupStep = Get-LogCleanupStep
 
-      $runMainFile = @"
+        $runMainFile = @"
 # Only edit this file if you intend to write a powershell module or need to use secrets or change the environment
 # If you intend to use this as a powershell project, then edit the program file in the private directory
 
@@ -247,6 +247,7 @@ function Invoke-$ModuleName {
   }
 
   finally {
+    `$lastState.lastRun = (Get-Date).ToString(`$appConfig.dateFormat)
     `$msg = "Finished process. `$(Get-Date)``n"
     Write-Txt -txt `$msg
     $logCleanupStep
@@ -260,48 +261,50 @@ Invoke-$ModuleName -ErrorAction Stop
 
 "@
 
-      $runMainFile | Out-File -FilePath "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1" -Encoding utf8
+        $runMainFile | Out-File -FilePath "$Path\$ModuleName\Public\Invoke-$ModuleName.ps1" -Encoding utf8
 
-      $blackListedFileContent = Get-BlackListedVars
-      $blackListedFileContent | Out-File -FilePath "$Path\$ModuleName\$blackListedFileName" -Encoding utf8
+        $blackListedFileContent = Get-BlackListedVars
+        $blackListedFileContent | Out-File -FilePath "$Path\$ModuleName\$blackListedFileName" -Encoding utf8
 
-      $logHelper = Get-LogCleaner
-      $logWriter = Get-LogWriter
-      $logHelper | Out-File -FilePath "$Path\$ModuleName\Private\LogHelper.ps1" -Encoding utf8
-      $logWriter | Out-File -FilePath "$Path\$ModuleName\Private\LogHelper.ps1" -Encoding utf8 -Append
+        $logHelper = Get-LogCleaner
+        $logWriter = Get-LogWriter
+        $logHelper | Out-File -FilePath "$Path\$ModuleName\Private\LogHelper.ps1" -Encoding utf8
+        $logWriter | Out-File -FilePath "$Path\$ModuleName\Private\LogHelper.ps1" -Encoding utf8 -Append
 
-      $errorHandler = Get-ErrorHelperContent
-      $errorHandler | Out-File -FilePath "$Path\$ModuleName\Private\ErrorHandler.ps1" -Encoding utf8
+        $errorHandler = Get-ErrorHelperContent
+        $errorHandler | Out-File -FilePath "$Path\$ModuleName\Private\ErrorHandler.ps1" -Encoding utf8
 
-      $appJson = @"
+        $appJson = @"
 {
   "preview": true,
   "keepLogsForNDays": 14,
   "logFileName": "$($ModuleName)",
   "summaryFolderName": "summary",
-  "runFolderName": "per_run"
+  "runFolderName": "per_run",
+  "dateFormat": "yyyy/MM/dd HH:mm:ss"
 }
 "@
-      $lastStateJson = @"
+        $lastStateJson = @"
 {
-  "state": "Any state from the last run of this program (or last update of this file) that is required for this run."
+  "state": "Any state from the last run of this program (or last update of this file) that is required for this run.",
+  "lastRun": null
 }
 "@
-      $privateConfigJson = @"
+        $privateConfigJson = @"
 {
   "password": "not_put_in_git"
 }
 "@
 
-      $appJson | Out-File -FilePath "$appConfig" -Encoding utf8
-      $lastStateJson | Out-File -FilePath "$lastStateConfig" -Encoding utf8
-      $privateConfigJson | Out-File -FilePath "$privateConfig" -Encoding utf8
+        $appJson | Out-File -FilePath "$appConfig" -Encoding utf8
+        $lastStateJson | Out-File -FilePath "$lastStateConfig" -Encoding utf8
+        $privateConfigJson | Out-File -FilePath "$privateConfig" -Encoding utf8
 
-      $appJson | Out-File -FilePath "$appConfigProd" -Encoding utf8
-      $lastStateJson | Out-File -FilePath "$lastStateConfigProd" -Encoding utf8
+        $appJson | Out-File -FilePath "$appConfigProd" -Encoding utf8
+        $lastStateJson | Out-File -FilePath "$lastStateConfigProd" -Encoding utf8
 
-      $privateConfigEndPath -replace "\\", "/" | Out-File -FilePath "$Path\$ModuleName\.gitignore" -Encoding utf8
-      $gitignore_content = "@
+        $privateConfigEndPath -replace "\\","/" | Out-File -FilePath "$Path\$ModuleName\.gitignore" -Encoding utf8
+        $gitignore_content = "@
 logs/*
 .vscode
 bin/
@@ -323,14 +326,14 @@ obj/
 *.dll
 *.wixpdb
 @"
-      $gitignore_content | Out-File -FilePath "$Path\$ModuleName\.gitignore" -Encoding utf8 -Append
-      # Copy the public/exported functions into the public folder, private functions into private folder
+        $gitignore_content | Out-File -FilePath "$Path\$ModuleName\.gitignore" -Encoding utf8 -Append
+        # Copy the public/exported functions into the public folder, private functions into private folder
 
-    }
-    catch {
-      Write-Error $_
+      }
+      catch {
+        Write-Error $_
+      }
     }
   }
-}
-Invoke-Scaffold -ErrorAction Stop
+  Invoke-Scaffold -ErrorAction Stop
 }

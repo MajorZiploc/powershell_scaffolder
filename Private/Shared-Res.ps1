@@ -1,7 +1,7 @@
 function Get-LogCleaner {
   [CmdletBinding()]
-  [OutputType([String])]
-  param ()
+  [OutputType([string])]
+  param()
   $logHelper = @"
 
 function Remove-Log {
@@ -45,8 +45,8 @@ function Remove-Log {
 
 function Get-ErrorHelperContent {
   [CmdletBinding()]
-  [OutputType([String])]
-  param ()
+  [OutputType([string])]
+  param()
   $errorHandler = @"
 
 function Get-ErrorDetail {
@@ -74,8 +74,8 @@ function Get-ErrorDetail {
 
 function Get-LogWriter {
   [CmdletBinding()]
-  [OutputType([String])]
-  param ()
+  [OutputType([string])]
+  param()
   $logWriter = @"
 
 function Write-Txt {
@@ -143,8 +143,8 @@ function Write-Json {
 
 function Get-LoggingNotes {
   [CmdletBinding()]
-  [OutputType([String])]
-  param ()
+  [OutputType([string])]
+  param()
 
   $logingNotes = @"
 # NOTE ON LOGGING: THESE HELPER LOGGING FUNCTIONS ARE REQUIRED TO BE USED.
@@ -170,8 +170,8 @@ function Get-LoggingNotes {
 
 function Get-StartTimeInfo {
   [CmdletBinding()]
-  [OutputType([String])]
-  param ()
+  [OutputType([string])]
+  param()
 
   $startTimeInfo = @"
 New-Variable -Name startTime -Value `$(Get-Date) -Option ReadOnly,AllScope -Force
@@ -183,8 +183,8 @@ New-Variable -Name logTime -Value `$(`$startTime.ToString("HH-mm-ss")) -Option R
 
 function Get-BlackListedVars {
   [CmdletBinding()]
-  [OutputType([String])]
-  param ()
+  [OutputType([string])]
+  param()
 
   $blackListedVars = @"
 
@@ -220,8 +220,8 @@ Why are these variables written to with force and are read-only? Why not use con
 
 function Get-LogCleanupStep {
   [CmdletBinding()]
-  [OutputType([String])]
-  param ()
+  [OutputType([string])]
+  param()
 
   $logCleanupStep = @"
 # Delete old logs
