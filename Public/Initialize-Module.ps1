@@ -234,6 +234,7 @@ function Invoke-$ModuleName {
   `$msg += "environment: `$environ"
   Write-Txt -txt `$msg
   Write-Json -label "appConfig:" -data `$appConfig
+  Write-Json -label "lastState:" -data `$lastState
 
   try {
     # Program is where you should write your normal powershell script code
