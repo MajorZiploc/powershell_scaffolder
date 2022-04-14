@@ -41,6 +41,30 @@ Or you can provide all arguments so that you do not get a prompt (non powershell
 
 Follow the prompts that this commands asks you, and you will have your powershell module/project/script scaffolded!
 
+## Consuming Logs
+
+Use function Write-DigestReport
+
+### Structure for reportInfo
+
+```
+{
+  json: {
+    searchLabelPattern: "Label pattern used to log piece of data of interest:",
+    fileName: "basename_of_file_to_store_logs_with_no_extension",
+    filePathKeyName: "optional string",
+    numOfLinesAfterMatch: 1 // optional int that defaults to 1
+  },
+  txt: {
+    searchLabelPattern: "Label pattern used to log piece of data of interest:",
+    fileName: "basename_of_file_to_store_logs_with_no_extension",
+    filePathKeyName: "optional string",
+    numOfLinesAfterMatch: 0 // optional int that defaults to 0
+  }
+}
+```
+
+
 ## Development Tools
 - vscode
   - ms-vscode.powershell
